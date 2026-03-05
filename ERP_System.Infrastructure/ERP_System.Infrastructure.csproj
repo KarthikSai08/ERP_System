@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <Folder Include="DependencyInjection\" />
-    <Folder Include="Persistence\Context\" />
     <Folder Include="Persistence\Repositories\" />
   </ItemGroup>
 
