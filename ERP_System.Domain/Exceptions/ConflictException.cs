@@ -4,7 +4,9 @@ using System.Text;
 
 namespace ERP_System.Domain.Exceptions
 {
-    internal class DomainException
+    public class ConflictException : Exception
     {
+
+        public ConflictException(string message) :base(message) { }
     }
 }

@@ -1,9 +1,13 @@
+using ERP_System.Infrastructure;
+using ERP_System.Infrastructure.Persistence.Context;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddScoped<DapperContext>();
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
