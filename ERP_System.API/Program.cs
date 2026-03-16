@@ -1,10 +1,14 @@
 using ERP_System.Infrastructure;
 using ERP_System.Infrastructure.Persistence.Context;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+
 builder.Services.AddInfrastructureServices(builder.Configuration);
+//builder.Services.AddApplication();
 builder.Services.AddScoped<DapperContext>();
 builder.Services.AddControllers();
 
@@ -16,6 +20,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();

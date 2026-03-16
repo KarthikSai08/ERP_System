@@ -17,7 +17,6 @@ namespace ERP_System.Infrastructure.Persistence.Context
             _config = config;
             _conString = _config.GetConnectionString("DefaultConnection");
         }
-
         public IDbConnection CreateConnection() => new SqlConnection(_conString);
     }
 }

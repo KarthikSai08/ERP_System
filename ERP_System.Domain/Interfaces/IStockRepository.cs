@@ -7,12 +7,13 @@ namespace ERP_System.Domain.Interfaces
 {
     public interface IStockRepository
     {
-        Task<Stock?> GetByProductAndWarehouseAsync(int productId, int warehouseId);
-        Task<IEnumerable<Stock>> GetByProductAsync(int productId);
-        Task<IEnumerable<Stock>> GetLowStockItemsAsync();
-        Task<int> GetTotalStockAsync(int productId);
-        Task<int> AddAsync(Stock stock);
-        Task UpdateAsync(Stock stock);
+        Task<Stock?> GetByProductAndWarehouseAsync(int productId, int warehouseId, CancellationToken ct);
+        Task<IEnumerable<Stock>> GetByProductAsync(int productId, CancellationToken ct);
+        Task<IEnumerable<Stock>> GetLowStockItemsAsync(CancellationToken ct);
+        Task<int> GetTotalStockAsync(int productId, CancellationToken ct);
+        Task<Dictionary<int, int>> GetTotalStockBatchAsync(List<int> productIds, CancellationToken ct);
+        Task<int> AddAsync(Stock stock, CancellationToken ct);
+        Task UpdateAsync(Stock stock, CancellationToken ct);
     }
 
 }

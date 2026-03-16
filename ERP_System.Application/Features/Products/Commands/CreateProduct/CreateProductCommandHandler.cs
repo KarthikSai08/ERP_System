@@ -24,7 +24,7 @@ namespace ERP_System.Application.Features.Products.Commands.CreateProduct
 
         public async Task<ApiResponse<ProductResponse>> Handle(CreateProductCommand cmd, CancellationToken cancellationToken)
         {
-            if (await _prdRepo.SkuExistAsync(cmd.SKU))
+            if (await _prdRepo.SkuExistAsync(cmd.SKU,cancellationToken))
                 throw new ConflictException($"Product with SKU '{cmd.SKU}' already exists ");
 
             var category = await _ctgRepo.GetByIdAsync(cmd.CategoryId)
@@ -36,7 +36,7 @@ namespace ERP_System.Application.Features.Products.Commands.CreateProduct
             var product = Product.Create(
                 cmd.Name, cmd.SKU, cmd.Price,  cmd.CostPrice, cmd.CategoryId, cmd.Description);
 
-            var id = await _prdRepo.AddAsync(product);
+            var id = await _prdRepo.AddAsync(product,cancellationToken);
 
             return ApiResponse<ProductResponse>.Ok(
             new ProductResponse(
