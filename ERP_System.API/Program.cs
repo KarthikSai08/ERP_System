@@ -11,7 +11,7 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 //builder.Services.AddApplication();
 builder.Services.AddScoped<DapperContext>();
 builder.Services.AddControllers();
-
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
