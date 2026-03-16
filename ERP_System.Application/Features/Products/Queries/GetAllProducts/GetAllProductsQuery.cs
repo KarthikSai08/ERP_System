@@ -1,4 +1,5 @@
 ﻿using ERP_System.Application.Common;
+using ERP_System.Application.DTOs;
 using ERP_System.Application.Features.Products.Commands.CreateProduct;
 using MediatR;
 using System;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace ERP_System.Application.Features.Products.Queries.GetAllProducts
 {
-    public record GetAllProductsQuery : IRequest<ApiResponse<IEnumerable<ProductResponse>>>
+    public record GetAllProductsQuery : IRequest<ApiResponse<IEnumerable<ProductResponseDto>>>
     {
     }
 }

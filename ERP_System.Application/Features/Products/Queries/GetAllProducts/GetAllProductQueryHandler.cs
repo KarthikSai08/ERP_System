@@ -1,4 +1,6 @@
-﻿using ERP_System.Application.Common;
+﻿using AutoMapper;
+using ERP_System.Application.Common;
+using ERP_System.Application.DTOs;
 using ERP_System.Application.Features.Products.Commands.CreateProduct;
 using ERP_System.Domain.Interfaces;
 using MediatR;
@@ -9,33 +11,34 @@ using System.Text;
 
 namespace ERP_System.Application.Features.Products.Queries.GetAllProducts
 {
-    public class GetAllProductQueryHandler : IRequestHandler<GetAllProductsQuery, ApiResponse<IEnumerable<ProductResponse>>>
+    public class GetAllProductQueryHandler : IRequestHandler<GetAllProductsQuery, ApiResponse<IEnumerable<ProductResponseDto>>>
     {
         private readonly IProductRepository _PrdRepo;
         private readonly IStockRepository _StkRepo;
-        public GetAllProductQueryHandler(IProductRepository prdRepo, IStockRepository stkRepo)
+        private readonly IMapper _mapper;
+        public GetAllProductQueryHandler(IProductRepository prdRepo, IStockRepository stkRepo,IMapper mapper)
         {
             _PrdRepo = prdRepo;
             _StkRepo = stkRepo;
+            _mapper = mapper;
         }
 
-        public async Task<ApiResponse<IEnumerable<ProductResponse>>> 
+        public async Task<ApiResponse<IEnumerable<ProductResponseDto>>> 
             Handle(GetAllProductsQuery query,CancellationToken ct) 
         {
             var prd = await _PrdRepo.GetAllAsync(ct);
-            var ids = prd.Select(p => p.ProductId).ToList();
+            
+            var response = _mapper.Map<List<ProductResponseDto>>(prd);
 
-            var stockMap = await _StkRepo.GetTotalStockBatchAsync(ids, ct);
+            var stockTasks = response.Zip(prd, (r, p) => new { Respone = r, ProductId = p.ProductId })
+                .Select(async x =>
+                {
+                    x.Respone.TotalStock = await _StkRepo.GetTotalStockAsync(x.ProductId, ct);
+                }
+                );
+            await Task.WhenAll(stockTasks);
 
-            var result = prd.Select(p => new ProductResponse (
-                p.ProductId, p.ProductName, p.SKU, p.Description, p.Price, p.CostPrice,
-                p.Price > 0 ? Math.Round(((p.Price - p.CostPrice) / p.Price) * 100, 2) : 0,
-                p.Category?.CategoryName ?? "N/A",
-                p.IsActive,
-                stockMap.GetValueOrDefault(p.ProductId, 0)
-             )).ToList();
-
-            return ApiResponse<IEnumerable<ProductResponse>>.Ok(result);        }
+            return ApiResponse<IEnumerable<ProductResponseDto>>.Ok(response);        }
         
     }
 }

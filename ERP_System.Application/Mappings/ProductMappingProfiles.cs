@@ -18,9 +18,10 @@ namespace ERP_System.Application.Mappings
                 opt => opt.MapFrom(src => src.Category != null ? src.Category.CategoryName : "N/A"))
 
                 .ForMember(dest => dest.MarginPercent,
-                    opt => opt.MapFrom(src => src.CalculateMargin()));
-
-
+                    opt => opt.MapFrom(src => src.CalculateMargin()))
+                
+                .ForMember(dest => dest.TotalStock,
+                    opt => opt.Ignore());
         }
     }
 }

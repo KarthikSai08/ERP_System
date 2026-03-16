@@ -54,6 +54,6 @@ namespace ERP_System.Domain.Entities
         }
 
         public void Deactivate() { IsActive = false; UpdatedAt = DateTime.Now; }
-        internal void SetCategory(Category c) => Category = c;  
+        public void SetCategory(Category c) => Category = c;  
     }
 }

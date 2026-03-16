@@ -1,4 +1,5 @@
 ﻿using ERP_System.Application.Common;
+using ERP_System.Application.DTOs;
 using ERP_System.Application.Features.Products.Commands.CreateProduct;
 using MediatR;
 using System;
@@ -8,7 +9,7 @@ using System.Text;
 namespace ERP_System.Application.Features.Products.Commands.UpdateProduct
 {
     public record UpdateProductCommand(int ProductId, string PrdName, string? Description,
-                                        decimal Price,decimal CostPrice ) : IRequest<ApiResponse<ProductResponse>>
+                                        decimal Price,decimal CostPrice ) : IRequest<ApiResponse<ProductResponseDto>>
 
     { 
     }
