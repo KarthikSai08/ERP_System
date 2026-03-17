@@ -7,11 +7,11 @@ namespace ERP_System.Domain.Interfaces
 {
     public interface ICustomerRepository
     {
-        Task<Customer?> GetByIdAsync(int id);
-        Task<Customer?> GetByEmailAsync(string email);
-        Task<IEnumerable<Customer>> GetAllAsync();
-        Task<bool> EmailExistsAsync(string email);
-        Task<int> AddAsync(Customer customer);
-        Task UpdateAsync(Customer customer);
+        Task<Customer?> GetByIdAsync(int id, CancellationToken ct);
+        Task<Customer?> GetByEmailAsync(string email, CancellationToken ct);
+        Task<IEnumerable<Customer>> GetAllAsync(CancellationToken ct);
+        Task<bool> EmailExistsAsync(string email, CancellationToken ct);
+        Task<int> AddAsync(Customer customer, CancellationToken ct);
+        Task UpdateAsync(Customer customer, CancellationToken ct);
     }
 }

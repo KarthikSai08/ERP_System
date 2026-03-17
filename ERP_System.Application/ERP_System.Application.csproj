@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features\Customers\Queries\" />
     <Folder Include="Services\Interfaces\" />
     <Folder Include="Validators\" />
   </ItemGroup>
