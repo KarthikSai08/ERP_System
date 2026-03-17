@@ -8,6 +8,7 @@ namespace ERP_System.Domain.Interfaces
     public interface IStockRepository
     {
         Task<Stock?> GetByProductAndWarehouseAsync(int productId, int warehouseId, CancellationToken ct);
+        Task<Stock?> GetByAllProductAndWarehouseAsync(List<int> productId, int warehouseId, CancellationToken ct);
         Task<IEnumerable<Stock>> GetByProductAsync(int productId, CancellationToken ct);
         Task<IEnumerable<Stock>> GetLowStockItemsAsync(CancellationToken ct);
         Task<int> GetTotalStockAsync(int productId, CancellationToken ct);

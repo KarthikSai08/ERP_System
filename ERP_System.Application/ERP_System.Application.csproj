@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features\Orders\Queries\" />
     <Folder Include="Services\Interfaces\" />
     <Folder Include="Validators\" />
   </ItemGroup>
@@ -23,6 +24,7 @@
     <PackageReference Include="MediatR" Version="14.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.13.9" />
+    <PackageReference Include="System.Linq" Version="4.3.0" />
   </ItemGroup>
 
 </Project>
