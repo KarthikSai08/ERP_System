@@ -50,7 +50,7 @@ namespace ERP_System.Domain.Entities
         }
 
         public bool IsLowstock => Quantity <= ReorderLevel;
-        internal void SetProduct(Product p) => Product = p;
-        internal void SetWarehouse(Warehouse w) => Warehouse = w;
+        public void SetProduct(Product p) => Product = p;
+        public void SetWarehouse(Warehouse w) => Warehouse = w;
     }
 }
