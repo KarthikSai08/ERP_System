@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
-using System.Linq;
 using ERP_System.Application.Common;
 using ERP_System.Application.DTOs;
 using ERP_System.Domain.Entities;
 using ERP_System.Domain.Exceptions;
 using ERP_System.Domain.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ERP_System.Application.Features.Orders.Commands.CreateOrder
@@ -65,15 +66,14 @@ namespace ERP_System.Application.Features.Orders.Commands.CreateOrder
                     await _stkRepo.UpdateAsync(stock, ct);
 
                     await _uow.CommitAsync();
-
-                    var created = await _orderRepo.GetByIdWithItemsAsync(orderId, ct);
-                    var res = _mapper.Map<OrderResponseDto>(created);
-
-                    if (res.CustomerName == "N/A")
-                        res.CustomerName = customer.CustomerName;
-
-                    return ApiResponse<OrderResponseDto>.Ok(res, "Order created Successfully");
+                    
                 }
+                var created = await _orderRepo.GetByIdWithItemsAsync(orderId, ct);
+                var res = _mapper.Map<OrderResponseDto>(created);
+
+                if (res.CustomerName == "N/A")
+                    res.CustomerName = customer.CustomerName;
+                return ApiResponse<OrderResponseDto>.Ok(res, "Order created Successfully");
 
             }
             catch 
