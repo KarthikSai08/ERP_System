@@ -32,8 +32,6 @@ namespace ERP_System.Application.Features.Employees.Commands.CreateEmployee
 
             var res = _mapper.Map<EmployeeResponseDto>(emp);
                 return ApiResponse<EmployeeResponseDto>.Ok(res);
-
-
         }
     }
 }
