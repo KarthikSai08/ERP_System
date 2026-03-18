@@ -7,12 +7,12 @@ namespace ERP_System.Domain.Interfaces
 {
     public interface IEmployeeRepository
     {
-        Task<Employee?> GetByIdAsync(int id);
-        Task<IEnumerable<Employee>> GetAllAsync();
-        Task<IEnumerable<Employee>> GetByDepartmentAsync(string department);
-        Task<bool> EmailExistsAsync(string email);
-        Task<int> AddAsync(Employee employee);
-        Task UpdateAsync(Employee employee);
+        Task<Employee?> GetByIdAsync(int id, CancellationToken ct);
+        Task<IEnumerable<Employee>> GetAllAsync(CancellationToken ct);
+        Task<IEnumerable<Employee>> GetByDepartmentAsync(string department, CancellationToken ct);
+        Task<bool> EmailExistsAsync(string email, CancellationToken ct);
+        Task<int> AddAsync(Employee employee, CancellationToken ct);
+        Task UpdateAsync(Employee employee, CancellationToken ct);
     }
 
 }
