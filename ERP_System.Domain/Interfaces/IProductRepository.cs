@@ -8,7 +8,6 @@ namespace ERP_System.Domain.Interfaces
     public interface IProductRepository
     {
         Task<Product?> GetByIdAsync(int id, CancellationToken ct);
-        Task<Product?> GetByIdsAsync(List<int> id,CancellationToken ct);
         Task<IEnumerable<Product>> GetAllAsync(CancellationToken ct);
         Task<IEnumerable<Product>> SearchAsync(string? name, int? categoryId, decimal? maxPrice,CancellationToken ct);
         Task<bool> SkuExistAsync(string sku, CancellationToken ct);
