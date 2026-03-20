@@ -14,5 +14,6 @@ namespace ERP_System.Domain.Interfaces
         Task<int> AddAsync(Order order, CancellationToken ct);
         Task UpdateAsync(Order order, CancellationToken ct);
         Task AddItemAsync(OrderItem item, CancellationToken ct);
+
     }
 }
