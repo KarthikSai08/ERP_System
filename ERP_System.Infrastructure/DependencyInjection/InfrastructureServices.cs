@@ -1,5 +1,7 @@
 ﻿using ERP_System.Domain.Interfaces;
+using ERP_System.Infrastructure.Persistence;
 using ERP_System.Infrastructure.Persistence.Context;
+using ERP_System.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +19,6 @@ namespace ERP_System.Infrastructure.DependencyInjection
         {
             services.AddDbContext<AppDbContext>(opts =>
                 opts.UseSqlServer(config.GetConnectionString("DefaultConnection")));
-
 
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
