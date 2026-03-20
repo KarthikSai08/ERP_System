@@ -10,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddInfrastructureServices(builder.Configuration);
 //builder.Services.AddApplication();
 builder.Services.AddScoped<DapperContext>();
+
+builder.Services.AddMemoryCache();
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddOpenApi();
