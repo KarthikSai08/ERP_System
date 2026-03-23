@@ -7,5 +7,5 @@ using System.Text;
 
 namespace ERP_System.Application.Features.Employees.Queries.GetAllEmployees
 {
-    public record GetAllEmployeesQuery : IRequest<ApiResponse<IEnumerable<EmployeeResponseDto>>>;
+    public record GetAllEmployeesQuery(string? Department = null) : IRequest<ApiResponse<IEnumerable<EmployeeResponseDto>>>;
 }

@@ -2,6 +2,7 @@
 using ERP_System.Application.Features.Products.Commands.DeleteProduct;
 using ERP_System.Application.Features.Products.Commands.UpdateProduct;
 using ERP_System.Application.Features.Products.Queries.GetAllProducts;
+using ERP_System.Application.Features.Products.Queries.SearchProducts;
 using ERP_System.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -41,5 +42,8 @@ namespace ERP_System.API.Controllers
             var result = await _mediator.Send(new DeleteProductCommand(id));
             return Ok(result);
         }
+        [HttpGet("search")]
+        public async Task<IActionResult> Search([FromQuery] string? name, [FromQuery] int? categoryId, [FromQuery] decimal? maxPrice)
+            => Ok(await _mediator.Send(new SearchProductsQuery(name, categoryId, maxPrice)));
     }
 }

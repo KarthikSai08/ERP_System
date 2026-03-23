@@ -15,5 +15,6 @@ namespace ERP_System.Domain.Interfaces
         Task UpdateAsync(Order order, CancellationToken ct);
         Task AddItemAsync(OrderItem item, CancellationToken ct);
 
+        Task<IEnumerable<SalesReportResponseDto>> GetSalesReportAsync(DateTime from, DateTime to);
     }
 }

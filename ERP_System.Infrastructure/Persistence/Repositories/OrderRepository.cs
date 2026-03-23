@@ -1,6 +1,10 @@
-﻿using ERP_System.Domain.Entities;
+﻿using Dapper;
+using ERP_System.Application.DTOs;
+using ERP_System.Application.Features.Orders.Queries.GetSalesReport;
+using ERP_System.Domain.Entities;
 using ERP_System.Domain.Interfaces;
 using ERP_System.Infrastructure.Persistence.Context;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -58,5 +62,27 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
             _context.Orders.Update(order);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<SalesReportResponseDto>> GetSalesReportAsync(DateTime from, DateTime to)
+        {
+            using var con = _dapper.CreateConnection();
+            var sql = @"
+            SELECT
+                p.Name  AS ProductName,
+                p.SKU   AS SKU,
+                SUM(oi.Quantity)                                   AS TotalQuantitySold,
+                SUM(oi.TotalPrice)                                 AS TotalRevenue,
+                SUM(oi.TotalPrice - (p.CostPrice  \\\\\\\* oi.Quantity))   AS TotalProfit
+            FROM OrderItems oi
+            INNER JOIN Products p ON oi.ProductId = p.Id
+            INNER JOIN Orders   o ON oi.OrderId   = o.Id
+            WHERE o.OrderDate BETWEEN @From AND @To
+              AND o.Status NOT IN (5)
+            GROUP BY p.Name, p.SKU
+            ORDER BY TotalRevenue DESC";
+
+            return await con.QueryAsync<SalesReportResponseDto>(sql, new { From = from, To = to });
+        }
+
     }
 }

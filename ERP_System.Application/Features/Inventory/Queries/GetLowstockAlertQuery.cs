@@ -7,6 +7,6 @@ using System.Text;
 
 namespace ERP_System.Application.Features.Inventory.Query
 {
-    public record GetLowstockAlertQuery : IRequest<ApiResponse<IEnumerable<LowStockAlertResponse>>>;
+    public record GetLowStockAlertQuery : IRequest<ApiResponse<IEnumerable<LowStockAlertResponse>>>;
    
 }
