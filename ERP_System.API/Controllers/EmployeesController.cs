@@ -14,14 +14,14 @@ namespace ERP_System.API.Controllers
     public EmployeesController(IMediator mediator) =>  _mediator = mediator;
 
      [HttpGet]
-        public async Task<IActionResult> GetAll( [FromQuery] string? department)
-        => Ok(await  _mediator.Send(new GetAllEmployeesQuery(department)));
+        public async Task<IActionResult> GetAll()
+        => Ok(await  _mediator.Send(new GetAllEmployeesQuery()));
 
      [HttpPost]
         public async Task<IActionResult> Create( [FromBody] CreateEmployeeCommand command)
         {
             var result = await  _mediator.Send(command);
-            return Created($"/api/v1/employee/{result.Data!.Id}", result);
+            return Created($"/api/v1/employee/{result.Data!.EmployeeId}", result);
         }
     }
 }

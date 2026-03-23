@@ -11,7 +11,7 @@ using System.Text;
 
 namespace ERP_System.Application.Features.Inventory.Query
 {
-    public class GetLowStockAlertQueryHandler : IRequestHandler<GetLowstockAlertQuery, ApiResponse<IEnumerable<LowStockAlertResponse>>>
+    public class GetLowStockAlertQueryHandler : IRequestHandler<GetLowStockAlertQuery, ApiResponse<IEnumerable<LowStockAlertResponse>>>
     {
         private readonly IStockRepository _stkRepo;
         private readonly IMapper _mapper;
@@ -21,7 +21,7 @@ namespace ERP_System.Application.Features.Inventory.Query
             _stkRepo = stkRepo;
             _mapper = mapper;
         }
-        public async Task<ApiResponse<IEnumerable<LowStockAlertResponse>>> Handle(GetLowstockAlertQuery qry, CancellationToken ct)
+        public async Task<ApiResponse<IEnumerable<LowStockAlertResponse>>> Handle(GetLowStockAlertQuery qry, CancellationToken ct)
         {
             var stock = await _stkRepo.GetLowStockItemsAsync(ct);
             var res = _mapper.Map<IEnumerable<LowStockAlertResponse>>(stock);

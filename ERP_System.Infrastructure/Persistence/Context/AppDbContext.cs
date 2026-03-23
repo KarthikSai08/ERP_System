@@ -43,7 +43,7 @@ namespace ERP_System.Infrastructure.Persistence.Context
             modelBuilder.Entity<Stock>(s =>
             {
                 s.HasKey(s => s.StockId);
-                s.HasIndex(s => new { s.ProductId, s.Warehouse }).IsUnique();
+                s.HasIndex(s => new { s.ProductId, s.WarehouseId }).IsUnique();
                 s.HasOne(s => s.Product).WithMany(p => p.Stocks).HasForeignKey(s => s.ProductId);
                 s.HasOne(s => s.Warehouse).WithMany(w => w.Stocks).HasForeignKey(s => s.WarehouseId);
             });

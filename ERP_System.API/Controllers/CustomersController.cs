@@ -21,8 +21,8 @@ namespace ERP_System.API.Controllers
         public async Task<IActionResult> Create( [FromBody] CreateCustomerCommand command)
         {
             var result = await _mediator.Send(command);
-            return Created($"/api/v1/customer/{result.Data!.Id}", result);
+            return Created($"/api/v1/customer/{result.Data!.CustomerId}", result);
         }
     }
 }
-}
+

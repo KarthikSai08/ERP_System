@@ -27,3 +27,4 @@ namespace ERP_System.Application.DTOs
         public decimal UnitPrice { get; set; }
         public decimal TotalPrice { get; set; }
     }
+}

@@ -1,12 +1,18 @@
-﻿using System;
+﻿using ERP_System.Application.Common;
+using ERP_System.Application.DTOs;
+using ERP_System.Application.Features.Categories.Commands.CreateCategory;
+using ERP_System.Domain.Entities;
+using ERP_System.Infrastructure.Persistence.Context;
+using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Elfie.Model;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ERP_System.Domain.Entities;
-using ERP_System.Infrastructure.Persistence.Context;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace ERP_System.API.Controllers
 {
@@ -15,9 +21,11 @@ namespace ERP_System.API.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IMediator _mediator;
 
-        public CategoriesController(AppDbContext context)
+        public CategoriesController(AppDbContext context,IMediator mediator)
         {
+            _mediator = mediator;
             _context = context;
         }
 
@@ -76,12 +84,10 @@ namespace ERP_System.API.Controllers
         // POST: api/Categories
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Category>> PostCategory(Category category)
+        public async Task<ActionResult<ApiResponse<CategoryResponseDto>>> PostCategory([FromBody] CreateCategoryCommand cmd, CancellationToken ct)
         {
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCategory", new { id = category.CategoryId }, category);
+            var result = await _mediator.Send(cmd);
+            return Created($"/api/v1/categories/{result.Data!.CategoryId}", result);
         }
 
         // DELETE: api/Categories/5

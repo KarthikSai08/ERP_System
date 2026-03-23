@@ -23,16 +23,22 @@ namespace ERP_System.API.Presentation
             catch (NotFoundException ex)
             {
                 _logger.LogWarning(ex.Message);
+                context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 404;
                 await context.Response.WriteAsJsonAsync(new { error = ex.Message });
+                return;
             }
             catch (ConflictException ex)
             {
+                _logger.LogError($"Caught ConflictException: {ex.Message}");
+                context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 409;
                 await context.Response.WriteAsJsonAsync(new { error = ex.Message });
+                return;
             }
             catch (ValidationException ex)
             {
+                context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 400;
                 
                 object response = ex.Errors.Any()
@@ -40,17 +46,22 @@ namespace ERP_System.API.Presentation
                         : new { errors = (object)new { General = new { error = ex.Message } } };
 
                 await context.Response.WriteAsJsonAsync(response);
+                return;
             }
             catch (InsufficientStockException ex)
             {
+                context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 422;
                 await context.Response.WriteAsJsonAsync(new { error = ex.Message });
+                return;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unhandled Exception");
+                context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 500;
                 await context.Response.WriteAsJsonAsync(new { error = "An Unexpected error occurred" });
+                return;
             }
 
         }

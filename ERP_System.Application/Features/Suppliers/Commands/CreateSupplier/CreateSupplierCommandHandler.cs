@@ -24,16 +24,13 @@ namespace ERP_System.Application.Features.Suppliers.Commands.CreateSupplier
         public async Task<ApiResponse<SupplierResponseDto>> Handle(CreateSupplierCommand cmd, CancellationToken ct)
         {
             if (await _supRepo.EmailExistsAsync(cmd.email,ct))
-                throw new ConflictException("Supplier with email @email already exists");
+                throw new ConflictException($"Supplier with email {cmd.email} already exists");
 
             var supplier = Supplier.Create(cmd.name,cmd.contactPerson,cmd.email,cmd.phone,cmd.address);
-
             await _supRepo.AddAsync(supplier, ct);
 
             var res = _mapper.Map<SupplierResponseDto>(supplier);
             return ApiResponse<SupplierResponseDto>.Ok(res);
-
-
         }
     }
 }

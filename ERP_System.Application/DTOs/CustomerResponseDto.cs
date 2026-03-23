@@ -6,8 +6,8 @@ namespace ERP_System.Application.DTOs
 {
     public class CustomerResponseDto
     {
-        public int Id { get; set; }
-        public string Name { get; set; } = default!;
+        public int CustomerId { get; set; }
+        public string CustomerName { get; set; } = default!;
         public string Email { get; set; } = default!;
         public string Phone { get; set; } = default!;
         public string? Address { get; set; }

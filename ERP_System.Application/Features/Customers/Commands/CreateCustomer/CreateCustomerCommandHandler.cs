@@ -25,7 +25,7 @@ namespace ERP_System.Application.Features.Customers.Commands.CreateCustomer
         public async Task<ApiResponse<CustomerResponseDto>> Handle(CreateCustomerCommand cmd, CancellationToken ct)
         {
             var cstMail = await _cstRepo.EmailExistsAsync(cmd.email, ct);
-            if (cstMail != null)
+            if (cstMail == true)
                 throw new ConflictException($"Customer with Email {cmd.email} already Exists");
 
             var customer = Customer.Create(cmd.name, cmd.email, cmd.phone, cmd.Address);

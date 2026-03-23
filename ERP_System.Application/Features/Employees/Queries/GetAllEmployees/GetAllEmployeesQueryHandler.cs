@@ -10,7 +10,7 @@ using System.Text;
 
 namespace ERP_System.Application.Features.Employees.Queries.GetAllEmployees
 {
-    public class GetAllEmployeesQueryHandler : IRequestHandler<GetAllEmployeesQuery, ApiResponse<IEnumerable<EmployeeResponseDto>>
+    public class GetAllEmployeesQueryHandler : IRequestHandler<GetAllEmployeesQuery, ApiResponse<IEnumerable<EmployeeResponseDto>>>
     {
         private readonly IEmployeeRepository _empRepo;
         private readonly IMapper _mapper;

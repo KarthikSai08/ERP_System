@@ -14,6 +14,12 @@ namespace ERP_System.Application.Mappings
         public ProductMappingProfile() 
         {
             CreateMap<Product, ProductResponseDto>()
+            .ForMember(dest => dest.Id,
+                opt => opt.MapFrom(src => src.ProductId))        // ✓ fix
+
+            .ForMember(dest => dest.Name,
+                opt => opt.MapFrom(src => src.ProductName))
+
                 .ForMember(dest => dest.CategoryName,
                 opt => opt.MapFrom(src => src.Category != null ? src.Category.CategoryName : "N/A"))
 

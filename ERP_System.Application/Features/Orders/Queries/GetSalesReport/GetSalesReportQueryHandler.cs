@@ -1,6 +1,7 @@
 ﻿using ERP_System.Application.Common;
 using ERP_System.Domain.Interfaces;
 using MediatR;
+using ERP_System.Application.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Text;

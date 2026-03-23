@@ -23,6 +23,6 @@ namespace ERP_System.Domain.Entities
             IsActive = true
         };
 
-        internal void SetWarehouse(Warehouse w) { }
+        public void SetWarehouse(Warehouse w) { }
     }
 }

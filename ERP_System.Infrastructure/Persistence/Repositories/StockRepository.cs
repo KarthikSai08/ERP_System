@@ -29,6 +29,7 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
         {
             _context.Stocks.Add(stock);
             await _context.SaveChangesAsync();
+            return stock.StockId;
         }
 
 

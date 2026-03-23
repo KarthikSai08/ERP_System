@@ -2,6 +2,7 @@
 using ERP_System.Domain.Entities;
 using ERP_System.Domain.Interfaces;
 using ERP_System.Infrastructure.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,19 +12,21 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
     public class ProductRepository : IProductRepository
     {
         private readonly AppDbContext _context;
-        private readonly string _conn;
         private readonly DapperContext _dapperContext;
 
-        public ProductRepository(AppDbContext context, string conn,DapperContext dapperContext)
+        public ProductRepository(AppDbContext context,DapperContext dapperContext)
         {
             _context = context;
-            _conn = conn;
             _dapperContext = dapperContext;
         }
 
         public async Task<int> AddAsync(Product product,CancellationToken ct)
         {
-            await _context.Products.AddAsync(product,ct);
+
+            if (product.Category != null)
+                _context.Entry(product.Category).State = EntityState.Unchanged;
+
+            await _context.Products.AddAsync(product, ct);
             await _context.SaveChangesAsync();
             return product.ProductId;
 
@@ -57,7 +60,7 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
                     return product;
 
                 },
-                splitOn: "ProductId");
+                splitOn: "CategoryId");
 
             return result;
         }
@@ -87,7 +90,9 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<Product>> SearchAsync(string? name, int? categoryId, decimal? maxPrice,CancellationToken ct)
         {
             using var con = _dapperContext.CreateConnection();
-            var sql = new StringBuilder(@"SELESELECT p.*, c.CategoryName, c.Description, c.IsActive
+            var sql = new StringBuilder(@"SELECT p.ProductId, p.ProductName, p.SKU, p.Description,
+                p.Price, p.CostPrice, p.IsActive, p.CategoryId,
+                c.CategoryId, c.CategoryName, c.Description, c.IsActive
                         FROM Products p
                         LEFT JOIN Categories c On p.CategoryId = c.CategoryId
                         WHERE p.IsActive = 1");
@@ -118,7 +123,8 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
                     prd.SetCategory(cat);
                     return prd;
                 },
-                splitOn: "ProductId");
+                param,
+                splitOn: "CategoryId");
         }
 
         public async Task<bool> SkuExistAsync(string sku, CancellationToken ct)

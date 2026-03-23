@@ -15,7 +15,7 @@ namespace ERP_System.Infrastructure.DependencyInjection
     public static class InfrastructureServices
     {
 
-        public static IServiceCollection AddInfrastucture(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration config)
         {
             services.AddDbContext<AppDbContext>(opts =>
                 opts.UseSqlServer(config.GetConnectionString("DefaultConnection")));

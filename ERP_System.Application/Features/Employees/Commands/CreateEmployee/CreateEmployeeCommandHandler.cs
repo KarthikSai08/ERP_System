@@ -25,7 +25,7 @@ namespace ERP_System.Application.Features.Employees.Commands.CreateEmployee
         public async Task<ApiResponse<EmployeeResponseDto>> Handle(CreateEmployeeCommand cmd, CancellationToken ct)
         {
             if (await _empRepo.EmailExistsAsync(cmd.email,ct))
-                throw new ConflictException("Employee with email @email Already Exists");
+                throw new ConflictException($"Employee with email {cmd.email} Already Exists");
 
             var emp = Employee.Create(cmd.firstName, cmd.lastName, cmd.email, cmd.phone, cmd.department, cmd.designation, cmd.salary);
                 await _empRepo.AddAsync(emp, ct);
