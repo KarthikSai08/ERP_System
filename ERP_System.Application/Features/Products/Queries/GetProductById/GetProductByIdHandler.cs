@@ -32,7 +32,7 @@ namespace ERP_System.Application.Features.Products.Queries.GetProductById
 
             var prd = await product ?? throw new NotFoundException("Product", qry.ProductId);
 
-            var response = _mapper.Map<ProductResponseDto>(stock);
+            var response = _mapper.Map<ProductResponseDto>(prd);
             response.TotalStock = await stock;
 
             return ApiResponse<ProductResponseDto>.Ok(response);

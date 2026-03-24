@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ERP_System.Application.Common;
 using ERP_System.Application.DTOs;
 using ERP_System.Domain.Entities;
@@ -48,7 +48,7 @@ namespace ERP_System.Application.Features.Orders.Commands.CreateOrder
 
                 foreach (var itemReq in cmd.Items)
                 {
-                    var product = await _prdRepo.GetByIdAsync(itemReq.ProductId,ct)
+                    var product = await _prdRepo.GetProductOnlyAsync(itemReq.ProductId,ct)
                         ?? throw new NotFoundException("Product", itemReq.ProductId);
 
                     if (!product.IsActive)
@@ -64,10 +64,10 @@ namespace ERP_System.Application.Features.Orders.Commands.CreateOrder
 
                     stock.DeductStock(itemReq.Quantity);
                     await _stkRepo.UpdateAsync(stock, ct);
-
-                    await _uow.CommitAsync();
-                    
                 }
+
+                await _uow.CommitAsync(); // ✅ commit once — all items atomically
+
                 var created = await _orderRepo.GetByIdWithItemsAsync(orderId, ct);
                 var res = _mapper.Map<OrderResponseDto>(created);
 

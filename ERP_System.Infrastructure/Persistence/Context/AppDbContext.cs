@@ -35,6 +35,8 @@ namespace ERP_System.Infrastructure.Persistence.Context
                 p.Property(p => p.ProductName).IsRequired().HasMaxLength(150);
                 p.Property(p => p.SKU).IsRequired().HasMaxLength(50);
                 p.HasIndex(p => p.SKU).IsUnique();
+                p.Property(e => e.IsActive).HasColumnName("IsActive");
+                p.Property(p => p.Description).HasMaxLength(500).IsRequired(false);
                 p.Property(p => p.Price).HasColumnType("decimal(10,2)");
                 p.Property(p => p.CostPrice).HasColumnType("decimal(10,2)");
                 p.HasOne(p => p.Category).WithMany(p => p.Products).HasForeignKey(p => p.CategoryId);
@@ -48,6 +50,12 @@ namespace ERP_System.Infrastructure.Persistence.Context
                 s.HasOne(s => s.Warehouse).WithMany(w => w.Stocks).HasForeignKey(s => s.WarehouseId);
             });
 
+            modelBuilder.Entity<Warehouse>(w =>
+            {
+                w.HasKey(w => w.WarehouseId);
+                w.Property(w => w.WarehouseName).IsRequired().HasMaxLength(100);
+                w.HasIndex(w => w.WarehouseName).IsUnique(); 
+            });
 
             modelBuilder.Entity<Order>(o =>
             {

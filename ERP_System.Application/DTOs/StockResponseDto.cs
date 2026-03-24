@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ERP_System.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -17,6 +18,7 @@ namespace ERP_System.Application.DTOs
         public int ReorderLevel { get; set; }
         public bool IsLowStock { get; set; }
     }
+ 
 
     public class LowStockAlertResponse
     {

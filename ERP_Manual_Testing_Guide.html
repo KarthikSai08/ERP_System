@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ERP System - Manual Testing Workflow & Guide</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;700&family=Fira+Code:wght@400;500&display=swap');
+
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #ec4899;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f1f5f9;
+      --text-dim: #94a3b8;
+      --accent: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    * { margin:0; padding:0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* Print Header */
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+      padding: 40px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+      border-radius: 24px;
+      border: 1px solid var(--card-border);
+    }
+
+    .header h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #818cf8, #f472b6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: var(--text-dim);
+      font-size: 1.1rem;
+    }
+
+    /* Section Cards */
+    .section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; width: 4px; height: 100%;
+      background: var(--primary);
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.8rem;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .num {
+      background: var(--primary);
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    /* Steps */
+    .step {
+      margin-bottom: 25px;
+      padding-left: 20px;
+      border-left: 2px dashed var(--card-border);
+    }
+
+    .step-header {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .step-body {
+      padding-bottom: 15px;
+    }
+
+    /* Code Blocks */
+    pre {
+      background: #000;
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      font-family: 'Fira Code', monospace;
+      font-size: 0.9rem;
+      color: #7dd3fc;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+
+    code {
+      color: var(--secondary);
+    }
+
+    /* Table Styles */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th {
+      text-align: left;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 2px solid var(--card-border);
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--card-border);
+      font-size: 0.95rem;
+    }
+
+    .tag {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .tag-post { background: var(--accent); color: white; }
+    .tag-get { background: var(--primary); color: white; }
+    .tag-put { background: var(--warning); color: white; }
+
+    /* Footer Info */
+    .footer {
+      text-align: center;
+      margin-top: 50px;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    /* Page Break for PDF */
+    @media print {
+      .page-break { page-break-before: always; }
+      body { background: white; color: black; padding: 0; }
+      .section { border: 1px solid #ddd; background: white; color: black; break-inside: avoid; }
+      .header { border: 1px solid #ddd; background: #f9f9f9; }
+      pre { background: #f5f5f5; color: #333; border: 1px solid #ccc; }
+      .header h1 { -webkit-text-fill-color: black; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Manual Testing Workflow</h1>
+      <p>Master Guide for the ERP System API Verification</p>
+    </div>
+
+    <!-- Section 1: Setup -->
+    <div class="section">
+      <div class="section-title">
+        <div class="num">1</div>
+        <h2>Pre-Flight Setup</h2>
+      </div>
+      <p>Before testing, ensure your environment is synchronized and the API is healthy.</p>
+      
+      <div class="step">
+        <div class="step-header">Database & Migrations</div>
+        <div class="step-body">
+          Run this in your terminal to ensure the schema is up-to-date:
+          <pre>dotnet ef database update --project ERP_System.Infrastructure --startup-project ERP_System.API</pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">Launch the System</div>
+        <div class="step-body">
+          Start the API and wait for the Swagger UI to open:
+          <pre>dotnet run --project ERP_System.API</pre>
+          Access URL: <code>https://localhost:5001/swagger</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Core Data Loop -->
+    <div class="section">
+      <div class="section-title">
+        <div class="num">2</div>
+        <h2>Core Data Lifecycle</h2>
+      </div>
+      <p>Execute these requests in order to populate the system correctly.</p>
+
+      <div class="step">
+        <div class="step-header">Phase A: Categories & Products</div>
+        <div class="step-body">
+          Products depend on Categories. Stock depends on Products.
+          <table>
+            <tr><th>Seq</th><th>Operation</th><th>Endpoint</th></tr>
+            <tr><td>1</td><td><span class="tag tag-post">POST</span></td><td>/api/categories</td></tr>
+            <tr><td>2</td><td><span class="tag tag-get">GET</span></td><td>/api/categories <small>(Save the ID)</small></td></tr>
+            <tr><td>3</td><td><span class="tag tag-post">POST</span></td><td>/api/products/create</td></tr>
+            <tr><td>4</td><td><span class="tag tag-get">GET</span></td><td>/api/products/{id} <small>(Verify IsActive: true)</small></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">Phase B: Customers & Warehouses</div>
+        <div class="step-body">
+          Orders depend on Customers and available Stock in a Warehouse.
+          <table>
+            <tr><th>Seq</th><th>Operation</th><th>Endpoint</th></tr>
+            <tr><td>1</td><td><span class="tag tag-post">POST</span></td><td>/api/customers</td></tr>
+            <tr><td>2</td><td><span class="tag tag-post">POST</span></td><td>/api/warehouse</td></tr>
+            <tr><td>3</td><td><span class="tag tag-post">POST</span></td><td>/api/stock/add <small>(Add quantity: 50)</small></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: The Order Flow -->
+    <div class="section page-break">
+      <div class="section-title">
+        <div class="num">3</div>
+        <h2>The Transactional Test (The "Big One")</h2>
+      </div>
+      <p>This tests CQRS, MediatR, Transactions, Repositories, and Stock Deduction in one flow.</p>
+      
+      <div class="step">
+        <div class="step-header">1. Create Order</div>
+        <pre>{
+  "customerId": 1,
+  "notes": "Testing workflow",
+  "items": [{ "productId": 1, "quantity": 5 }]
+}</pre>
+      </div>
+
+      <div class="step">
+        <div class="step-header">2. Verify Side Effects</div>
+        <div class="step-body">
+          <ul>
+            <li><strong>Stock Level:</strong> Check <code>GET /api/stock</code>. Quantity should be 45 (Init 50 - Order 5).</li>
+            <li><strong>Response Detail:</strong> Check <code>GET /api/orders/{id}</code>. Ensure Customer and Product names map correctly via AutoMapper.</li>
+            <li><strong>Failure Case:</strong> Try to create the same order with <code>quantity: 100</code>. Verify you get an <code>InsufficientStockException</code> (HTTP 422).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: How Everything is Connected -->
+    <div class="section page-break">
+      <div class="section-title">
+        <div class="num">4</div>
+        <h2>How Everything is Connected</h2>
+      </div>
+      <p>The system is built on <strong>Clean Architecture</strong>. Here is the lifecycle of a request:</p>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+        <div class="card" style="background: rgba(99, 102, 241, 0.05); padding: 15px; border-radius: 12px; border: 1px solid var(--card-border);">
+          <h4 style="color: var(--primary); margin-bottom: 10px;">1. API Layer (Entry)</h4>
+          <p style="font-size: 0.9rem;">Controllers receive HTTP requests. They use <strong>MediatR</strong> to send Commands/Queries to the Application layer. Zero business logic here.</p>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.05); padding: 15px; border-radius: 12px; border: 1px solid var(--card-border);">
+          <h4 style="color: var(--secondary); margin-bottom: 10px;">2. Application Layer (Brain)</h4>
+          <p style="font-size: 0.9rem;">Handlers coordinate the work. They use <strong>FluentValidation</strong> for rules, <strong>AutoMapper</strong> for DTOs, and <strong>Repositories</strong> for data.</p>
+        </div>
+        <div class="card" style="background: rgba(16, 185, 129, 0.05); padding: 15px; border-radius: 12px; border: 1px solid var(--card-border);">
+          <h4 style="color: var(--accent); margin-bottom: 10px;">3. Domain Layer (Core)</h4>
+          <p style="font-size: 0.9rem;">Rich Entities (Product, Order) enforce core business rules. This is the heart of your ERP system.</p>
+        </div>
+        <div class="card" style="background: rgba(245, 158, 11, 0.05); padding: 15px; border-radius: 12px; border: 1px solid var(--card-border);">
+          <h4 style="color: var(--warning); margin-bottom: 10px;">4. Infrastructure (Storage)</h4>
+          <p style="font-size: 0.9rem;"><strong>EF Core</strong> handles the heavy writes. <strong>Dapper</strong> provides lightning-fast reads. <strong>Unit of Work</strong> keeps it all atomic.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: The Master Step-by-Step Roadmap -->
+    <div class="section">
+      <div class="section-title">
+        <div class="num">5</div>
+        <h2>The Master Testing Roadmap</h2>
+      </div>
+      <p>Run these in the exact order shown below to build a full business scenario.</p>
+      
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+        <div style="padding: 10px 20px; border-radius: 8px; background: rgba(99,102,241,0.1); border: 1px solid var(--card-border);">
+          <span style="color: var(--primary); font-weight: 700; margin-right: 15px;">STEP 01</span> 
+          <span><strong>Category</strong>: Create a grouping (e.g., "Electronics")</span>
+        </div>
+        <div style="padding: 10px 20px; border-radius: 8px; background: rgba(99,102,241,0.1); border: 1px solid var(--card-border);">
+          <span style="color: var(--primary); font-weight: 700; margin-right: 15px;">STEP 02</span> 
+          <span><strong>Supplier</strong>: Register where you buy products from</span>
+        </div>
+        <div style="padding: 10px 20px; border-radius: 8px; background: rgba(99,102,241,0.1); border: 1px solid var(--card-border);">
+          <span style="color: var(--primary); font-weight: 700; margin-right: 15px;">STEP 03</span> 
+          <span><strong>Product</strong>: Create a product linked to Category (ID from Step 1)</span>
+        </div>
+        <div style="padding: 10px 20px; border-radius: 8px; background: rgba(16,185,129,0.1); border: 1px solid var(--accent);">
+          <span style="color: var(--accent); font-weight: 700; margin-right: 15px;">STEP 04</span> 
+          <span><strong>Warehouse</strong>: Define a storage location (e.g., "Main Warehouse")</span>
+        </div>
+        <div style="padding: 10px 20px; border-radius: 8px; background: rgba(16,185,129,0.1); border: 1px solid var(--accent);">
+          <span style="color: var(--accent); font-weight: 700; margin-right: 15px;">STEP 05</span> 
+          <span><strong>Inventory</strong>: Add stock for Product (ID from Step 3) in Warehouse</span>
+        </div>
+        <div style="padding: 10px 20px; border-radius: 8px; background: rgba(236,72,153,0.1); border: 1px solid var(--secondary);">
+          <span style="color: var(--secondary); font-weight: 700; margin-right: 15px;">STEP 06</span> 
+          <span><strong>Customer</strong>: Register a buyer</span>
+        </div>
+        <div style="padding: 20px; border-radius: 8px; background: linear-gradient(to right, rgba(99,102,241,0.2), rgba(236,72,153,0.2)); border: 1px solid var(--primary);">
+          <span style="color: white; font-weight: 700; margin-right: 15px;">THE GOAL: STEP 07</span> 
+          <span><strong>Order</strong>: Create a sale. It checks Customer + Product + Subtracts Stock.</span>
+        </div>
+        <div style="padding: 10px 20px; border-radius: 8px; background: rgba(245,158,11,0.1); border: 1px solid var(--warning);">
+          <span style="color: var(--warning); font-weight: 700; margin-right: 15px;">STEP 08</span> 
+          <span><strong>Employee</strong>: Register the user handling the transactions</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: Detailed Endpoint Workflow Library -->
+    <div class="section page-break">
+      <div class="section-title">
+        <div class="num">6</div>
+        <h2>Detailed Endpoint Workflow Library</h2>
+      </div>
+
+      <!-- Categories -->
+      <div class="step">
+        <div class="step-header">1. CategoriesController — [Configuration Module]</div>
+        <div class="step-body">
+          <p><strong>Goal</strong>: Setup the high-level grouping. Everything in the system starts here.</p>
+          <pre><span class="tag tag-post">POST</span> /api/categories
+{
+  "categoryName": "Laptop",
+  "description": "Premium compute devices",
+  "isActive": true
+}</pre>
+          <small>➔ Run <code>GET /api/categories/all</code> to get the <code>categoryId</code>.</small>
+        </div>
+      </div>
+
+      <!-- Suppliers -->
+      <div class="step">
+        <div class="step-header">2. SuppliersController — [Supply Chain]</div>
+        <div class="step-body">
+          <p><strong>Goal</strong>: Register the vendors who provide you with goods.</p>
+          <pre><span class="tag tag-post">POST</span> /api/suppliers
+{
+  "supplierName": "TechCorp Global",
+  "contactPerson": "Alice Smith",
+  "email": "supply@techcorp.com",
+  "phoneNumber": "+1-800-SUPPLY",
+  "address": "456 Silicon Valley",
+  "isActive": true
+}</pre>
+        </div>
+      </div>
+
+      <!-- Products -->
+      <div class="step">
+        <div class="step-header">3. ProductsController — [Catalog Module]</div>
+        <div class="step-body">
+          <p><strong>Goal</strong>: Initialize your item master. <strong>Requires categoryId from Step 1.</strong></p>
+          <pre><span class="tag tag-post">POST</span> /api/products/create
+{
+  "productName": "MacBook Pro M3",
+  "sku": "MBP-M3-01",
+  "price": 1999.99,
+  "costPrice": 1500.00,
+  "categoryId": 1,
+  "description": "Late 2024 model"
+}</pre>
+          <small>➔ Run <code>GET /api/products/all-products</code> to get the <code>productId</code>.</small>
+        </div>
+      </div>
+
+      <!-- Warehouses -->
+      <div class="step">
+        <div class="step-header">4. WarehousesController — [Logistics]</div>
+        <div class="step-body">
+          <p><strong>Goal</strong>: Create a physical location where stock is held.</p>
+          <pre><span class="tag tag-post">POST</span> /api/warehouses/add-warehouse
+{
+  "name": "Dubai Hub",
+  "location": "Jebel Ali Freezone",
+  "isActive": true
+}</pre>
+        </div>
+      </div>
+
+      <!-- Inventories/Stock -->
+      <div class="step">
+        <div class="step-header">5. InventoriesController — [Operations]</div>
+        <div class="step-body">
+          <p><strong>Goal</strong>: Add actual quantities. <strong>Requires productId (Step 3) and warehouseId (Step 4).</strong></p>
+          <pre><span class="tag tag-post">POST</span> /api/inventories/add-stock
+{
+  "productId": 1,
+  "warehouseId": 1,
+  "quantity": 50
+}</pre>
+          <p><strong>Low Stock Monitoring</strong>:</p>
+          <pre><span class="tag tag-get">GET</span> /api/inventories/low-stock</pre>
+          <small>➔ Note: Returns any product where total stock across all warehouses is below 10.</small>
+        </div>
+      </div>
+
+      <!-- Customers -->
+      <div class="step">
+        <div class="step-header">6. CustomersController — [CRM Module]</div>
+        <div class="step-body">
+          <p><strong>Goal</strong>: Setup the buyer profile. Necessary for order attribution.</p>
+          <pre><span class="tag tag-post">POST</span> /api/customers
+{
+  "customerName": "John Doe",
+  "email": "john.doe@email.com",
+  "phoneNumber": "555-0101",
+  "address": "123 Main St",
+  "isActive": true
+}</pre>
+          <small>➔ Note: <code>GET /api/customers</code> will show the ID needed for the order.</small>
+        </div>
+      </div>
+
+      <!-- Orders -->
+      <div class="step">
+        <div class="step-header">7. OrdersController — [Transaction Module]</div>
+        <div class="step-body">
+          <p><strong>Goal</strong>: The final transaction. <strong>Combines customerId (Step 6) and productId (Step 3).</strong></p>
+          <pre><span class="tag tag-post">POST</span> /api/orders
+{
+  "customerId": 1,
+  "notes": "Premium Packaging please",
+  "items": [
+    { "productId": 1, "quantity": 1 }
+  ]
+}</pre>
+          <p><strong>Order Management & Reporting</strong>:</p>
+          <pre><span class="tag tag-put">PATCH</span> /api/orders/{id}/status
+Body: 2 <small>(Integer for Shipped, 3 for Delivered, etc.)</small>
+
+<span class="tag tag-get">GET</span> /api/orders/reports/sales?from=2024-01-01&to=2024-12-31</pre>
+          <p><strong>Behind the Scenes</strong>: Creating an order validates Customer/Product status and subtracts stock. The Sales Report joins Orders and Items to calculate daily revenue.</p>
+        </div>
+      </div>
+
+      <!-- Employees -->
+      <div class="step">
+        <div class="step-header">8. EmployeesController — [HR Module]</div>
+        <div class="step-body">
+          <p><strong>Goal</strong>: Register the workforce. Can be extended for "Order Assigned To" logic.</p>
+          <pre><span class="tag tag-post">POST</span> /api/employees
+{
+  "firstName": "Robert",
+  "lastName": "Manager",
+  "email": "robert@erp.com",
+  "phoneNumber": "555-9090",
+  "position": "Sales Manager",
+  "department": "Logistics"
+}</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Troubleshooting -->
+    <div class="section">
+      <div class="section-title">
+        <div class="num">7</div>
+        <h2>Developer Troubleshooting Hub</h2>
+      </div>
+      <table>
+        <tr><th>Error Profile</th><th>The "Hidden" Reason</th><th>Solution</th></tr>
+        <tr>
+          <td>Conflicted with FK Constraint "FK_Products_Categories"</td>
+          <td>EF Core is trying to re-update the Category while updating the Product.</td>
+          <td>Set <code>Entry(cat).State = Unchanged</code> in Repo.</td>
+        </tr>
+        <tr>
+          <td>No route matches supplied values</td>
+          <td>Action name has "Async" suffix stripped by ASP.NET Core by default.</td>
+          <td>Use <code>CreatedAtRoute</code> with named route instead of <code>CreatedAtAction</code>.</td>
+        </tr>
+        <tr>
+          <td>Product is not active (even in DB)</td>
+          <td>Dapper Column Ordering bug (IsActive mapped to Category).</td>
+          <td>Ensure <code>IsActive</code> comes BEFORE <code>CategoryId</code> in SELECT query.</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Section 8: Business Logic & Roles -->
+    <div class="section">
+      <div class="section-title">
+        <div class="num">8</div>
+        <h2>Business Logic: Roles & Responsibility</h2>
+      </div>
+      <div class="step">
+        <div class="step-header">Why are Employees in the system?</div>
+        <div class="step-body">
+          <p>In a real ERP, **Employees** represent the "Who". While the system currently stores their profiles, they are meant for **Accountability and Assignment**:</p>
+          <ul>
+            <li><strong>Order Fulfillment</strong>: Assigning an employee to "Pick" an order.</li>
+            <li><strong>Audit Logs</strong>: Tracking which employee created a product or updated stock.</li>
+            <li><strong>Departmental Security</strong>: Restricting access based on their position (e.g., only "Sales Manager" can approve large discounts).</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">Who updates the Order Status?</div>
+        <div class="step-body">
+          <p>The <strong>Logistics/Warehouse Team</strong> is responsible for calling the <code>PATCH /api/orders/{id}/status</code> endpoint:</p>
+          <ul>
+            <li><strong>Warehouse Staff</strong>: Marks it as <code>2 (Processing)</code> when they start picking items.</li>
+            <li><strong>Dispatch Team</strong>: Marks it as <code>3 (Shipped)</code> when the courier picks it up.</li>
+            <li><strong>Delivery System</strong>: Automatically marks it as <code>4 (Delivered)</code> via a callback when the customer signs for it.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>&copy; 2026 ERP System Developer Guide • Open this file in Chrome/Edge and Ctrl+P to Save as PDF</p>
+    </div>
+  </div>
+</body>
+</html>

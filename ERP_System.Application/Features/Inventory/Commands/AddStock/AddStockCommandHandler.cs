@@ -29,13 +29,12 @@ namespace ERP_System.Application.Features.Inventory.Command.AddStock
             var prd = await _prdRepo.GetByIdAsync(cmd.productId,ct)
                  ?? throw new NotFoundException("Product" , cmd.productId);
 
-            var stock = await _stckRepo.GetByProductAndWarehouseAsync(cmd.warehouseId,cmd.productId,ct);
+            var stock = await _stckRepo.GetByProductAndWarehouseAsync(cmd.productId,cmd.warehouseId, ct);
 
             if(stock is null)
             {
                 stock = Stock.Create(cmd.productId, cmd.warehouseId, cmd.Quantity, cmd.ReorderLevel);
 
-                stock.SetProduct(prd);
                 await _stckRepo.AddAsync(stock,ct);
             }
             else
@@ -45,6 +44,10 @@ namespace ERP_System.Application.Features.Inventory.Command.AddStock
             }
 
             var res = _mapper.Map<StockResponseDto>(stock);
+
+            res.ProductName = prd.ProductName;
+            res.SKU = prd.SKU;
+
             return ApiResponse<StockResponseDto>.Ok(res, "Stock Added Successfully");
         }
     }

@@ -48,6 +48,10 @@ namespace ERP_System.Application.Features.Products.Commands.CreateProduct
 
             response.TotalStock = 0;
 
+            Console.WriteLine($"Product.ProductId = {product.ProductId}");
+            Console.WriteLine($"Response.Id = {response.Id}");
+            Console.WriteLine($"Response.Id is null or 0? {response.Id <= 0}");
+
             return ApiResponse<ProductResponseDto>.Ok(response,"Product created successfully");
         }
     }

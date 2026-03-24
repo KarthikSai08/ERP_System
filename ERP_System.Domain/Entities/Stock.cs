@@ -17,7 +17,7 @@ namespace ERP_System.Domain.Entities
         public int ReorderLevel { get; set; }
         public DateTime LastUpdated { get; set; }
 
-        public Product? Product { get; set; }
+        public Product Product { get; set; }
         public Warehouse Warehouse { get; set; }
 
         private Stock() { }

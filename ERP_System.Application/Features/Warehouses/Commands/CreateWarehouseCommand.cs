@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ERP_System.Application.Features.Warehouse.Commands
+namespace ERP_System.Application.Features.Warehouses.Commands
 {
     public record CreateWarehouseCommand(string WarehouseName, string Location) : IRequest<ApiResponse<WarehouseResponseDto>>
     {

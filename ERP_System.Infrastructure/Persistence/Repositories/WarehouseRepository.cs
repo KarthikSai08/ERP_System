@@ -37,7 +37,8 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
                 ?? throw new NotFoundException("Warehouse",id);
             return res;
         }
-
+        public async Task<bool> WarehouseExistsAsync(string name, CancellationToken ct)
+            => await _context.Warehouses.AnyAsync(s => s.WarehouseName == name, ct);
         public async Task UpdateAsync(Warehouse warehouse, CancellationToken ct)
         {
             _context.Warehouses.Update(warehouse);

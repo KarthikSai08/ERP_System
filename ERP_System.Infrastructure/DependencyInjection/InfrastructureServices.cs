@@ -27,6 +27,7 @@ namespace ERP_System.Infrastructure.DependencyInjection
             services.AddScoped<ISupplierRepository, SupplierRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            services.AddScoped<IWarehouseRepository, WarehouseRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 

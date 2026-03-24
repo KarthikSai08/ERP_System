@@ -2,33 +2,87 @@
 using ERP_System.Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace ERP_System.Infrastructure.Persistence
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private readonly AppDbContext _context;
-        private readonly IDbContextTransaction _transaction;
+        private IDbContextTransaction _transaction;
 
-        public UnitOfWork(AppDbContext context) => _context = context;
-        public async Task BeginTransactionAsync()
-            => await _context.Database.BeginTransactionAsync();
-
-        public async Task CommitAsync()
+        public UnitOfWork(AppDbContext context)
         {
-            await _context.SaveChangesAsync();
-            await _transaction.CommitAsync();
+            _context = context;
         }
 
-        public void Dispose()
-            => _transaction?.Dispose();
+        // Start transaction safely
+        public async Task BeginTransactionAsync()
+        {
+            if (_transaction != null)
+                return; // Prevent multiple transactions
 
+            _transaction = await _context.Database.BeginTransactionAsync();
+        }
+
+        // Commit with proper lifecycle handling
+        public async Task CommitAsync()
+        {
+            if (_transaction == null)
+                throw new InvalidOperationException("No active transaction to commit");
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                await _transaction.CommitAsync();
+            }
+            catch
+            {
+                await RollbackAsync();
+                throw;
+            }
+            finally
+            {
+                await DisposeTransactionAsync();
+            }
+        }
+
+        // Rollback safely
         public async Task RollbackAsync()
-            => await _transaction.RollbackAsync();  
+        {
+            if (_transaction == null)
+                return;
 
+            try
+            {
+                await _transaction.RollbackAsync();
+            }
+            finally
+            {
+                await DisposeTransactionAsync();
+            }
+        }
+
+        // Optional: Use only when NOT using transactions
         public async Task<int> SaveChangesAsync()
-            => await _context.SaveChangesAsync();
+        {
+            return await _context.SaveChangesAsync();
+        }
+
+        // Dispose transaction properly
+        private async Task DisposeTransactionAsync()
+        {
+            if (_transaction != null)
+            {
+                await _transaction.DisposeAsync();
+                _transaction = null;
+            }
+        }
+
+        // Dispose context
+        public void Dispose()
+        {
+            _context.Dispose();
+        }
     }
 }

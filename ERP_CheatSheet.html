@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ERP System — Developer Cheat Sheet</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    :root {
+      --bg: #0f1117;
+      --card: #1a1d27;
+      --border: #2a2d3e;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --accent3: #ff6b6b;
+      --accent4: #ffd166;
+      --accent5: #4cc9f0;
+      --text: #e2e8f0;
+      --muted: #8892a4;
+      --code-bg: #0d1117;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    /* ── Cover Page ── */
+    .cover {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f1117 0%, #1a1228 50%, #0f1117 100%);
+      text-align: center;
+      page-break-after: always;
+      position: relative;
+      overflow: hidden;
+    }
+    .cover::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(108,99,255,0.15) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .cover-badge {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 6px 18px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+    .cover h1 {
+      font-size: 52px;
+      font-weight: 800;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #fff 30%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+    }
+    .cover p {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 500px;
+      margin-bottom: 40px;
+    }
+    .cover-meta {
+      display: flex;
+      gap: 32px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .cover-meta span b { color: var(--text); }
+
+    /* ── Page Layout ── */
+    .page {
+      padding: 28px 32px;
+      max-width: 1100px;
+      margin: 0 auto;
+      page-break-after: always;
+    }
+
+    /* ── Section Header ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border);
+    }
+    .section-header .num {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      font-weight: 800;
+      font-size: 13px;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .section-header h2 {
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .section-header .tag {
+      margin-left: auto;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .tag-arch    { background: rgba(108,99,255,0.2); color: var(--accent); }
+    .tag-pattern { background: rgba(0,212,170,0.2);  color: var(--accent2); }
+    .tag-db      { background: rgba(76,201,240,0.2); color: var(--accent5); }
+    .tag-api     { background: rgba(255,107,107,0.2);color: var(--accent3); }
+    .tag-infra   { background: rgba(255,209,102,0.2);color: var(--accent4); }
+
+    /* ── Cards Grid ── */
+    .grid { display: grid; gap: 14px; }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .card h3 {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card h3 .icon {
+      font-size: 16px;
+    }
+    .card p, .card li {
+      color: var(--muted);
+      font-size: 11.5px;
+      line-height: 1.6;
+    }
+    .card ul { padding-left: 14px; }
+    .card .where {
+      margin-top: 8px;
+      font-size: 10.5px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent2);
+      background: rgba(0,212,170,0.07);
+      border-left: 3px solid var(--accent2);
+      padding: 4px 8px;
+      border-radius: 0 4px 4px 0;
+    }
+    .card .where span { color: var(--muted); display: block; }
+
+    /* ── Code Block ── */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      line-height: 1.7;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .kw  { color: #c792ea; }
+    .cl  { color: #82aaff; }
+    .st  { color: #c3e88d; }
+    .cm  { color: #546e7a; font-style: italic; }
+    .at  { color: #ffcb6b; }
+    .nm  { color: var(--accent5); }
+
+    /* ── Arch Diagram ── */
+    .arch {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .arch-layer {
+      border-radius: 8px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .arch-layer .layer-name { font-weight: 700; font-size: 12px; min-width: 120px; }
+    .arch-layer .layer-desc { font-size: 11px; color: var(--muted); }
+    .arch-layer .layer-files { font-size: 10px; font-family: 'JetBrains Mono', monospace; margin-left: auto; color: var(--muted); }
+    .layer-api   { background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.3); }
+    .layer-app   { background: rgba(108,99,255,0.12);  border: 1px solid rgba(108,99,255,0.3); }
+    .layer-infra { background: rgba(76,201,240,0.12);  border: 1px solid rgba(76,201,240,0.3); }
+    .layer-dom   { background: rgba(0,212,170,0.12);   border: 1px solid rgba(0,212,170,0.3); }
+    .arch-arrow  { text-align: center; color: var(--muted); font-size: 16px; }
+
+    /* ── Flow Diagram ── */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .flow-step {
+      background: rgba(108,99,255,0.15);
+      border: 1px solid rgba(108,99,255,0.4);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .flow-arrow { color: var(--muted); font-size: 14px; }
+
+    /* ── Pill Tags ── */
+    .pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .pill {
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: 10px;
+      padding: 2px 10px;
+      background: rgba(108,99,255,0.15);
+      color: var(--accent);
+      border: 1px solid rgba(108,99,255,0.3);
+    }
+    .pill-green { background: rgba(0,212,170,0.12); color: var(--accent2); border-color: rgba(0,212,170,0.3); }
+    .pill-red   { background: rgba(255,107,107,0.12); color: var(--accent3); border-color: rgba(255,107,107,0.3); }
+    .pill-blue  { background: rgba(76,201,240,0.12);  color: var(--accent5); border-color: rgba(76,201,240,0.3); }
+    .pill-gold  { background: rgba(255,209,102,0.12); color: var(--accent4); border-color: rgba(255,209,102,0.3); }
+
+    /* ── Table ── */
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th { background: rgba(108,99,255,0.15); color: var(--accent); font-weight: 700; padding: 8px 10px; text-align: left; }
+    td { padding: 7px 10px; border-bottom: 1px solid var(--border); color: var(--muted); }
+    td:first-child { color: var(--text); font-weight: 600; }
+    tr:last-child td { border-bottom: none; }
+
+    /* ── Highlight Box ── */
+    .highlight {
+      background: rgba(255,209,102,0.07);
+      border: 1px solid rgba(255,209,102,0.3);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 11.5px;
+      color: var(--accent4);
+      margin-top: 10px;
+    }
+    .highlight b { color: #fff; }
+
+    /* ── Print ── */
+    @media print {
+      body { background: #fff; color: #111; font-size: 11px; }
+      .cover { background: linear-gradient(135deg, #1a0a2e, #2d1b5e); color: #fff; }
+      .card { background: #f8f9fa; border-color: #dee2e6; break-inside: avoid; }
+      pre { background: #f1f3f5; color: #333; }
+      .page { padding: 20px 24px; }
+      .kw { color: #7c3aed; }
+      .cl { color: #1d4ed8; }
+      .st { color: #15803d; }
+      .cm { color: #6b7280; }
+      .at { color: #b45309; }
+      .nm { color: #0369a1; }
+      .section-header h2 { color: #1e293b; }
+      .card h3 { color: #1e293b; }
+      .card p, .card li, td { color: #374151; }
+      .arch-layer .layer-desc { color: #374151; }
+      .flow-step { color: #1e293b; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     COVER PAGE
+══════════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-badge">Developer Cheat Sheet</div>
+  <h1>ERP System<br/>Knowledge Map</h1>
+  <p>Every pattern, concept, and technique learned while building the ERP System — with where and how each is used.</p>
+  <div class="cover-meta">
+    <span><b>Architecture:</b> Clean Architecture</span>
+    <span><b>Pattern:</b> CQRS + MediatR</span>
+    <span><b>ORM:</b> EF Core + Dapper</span>
+    <span><b>Modules:</b> 8 Features</span>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 1 — Clean Architecture + Project Structure
+══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-header">
+    <div class="num">1</div>
+    <h2>Clean Architecture — Project Structure</h2>
+    <span class="tag tag-arch">Architecture</span>
+  </div>
+
+  <div class="arch">
+    <div class="arch-layer layer-api">
+      <span class="layer-name">🌐 API Layer</span>
+      <span class="layer-desc">HTTP entry point — Controllers, Middleware, Program.cs, DI setup</span>
+      <span class="layer-files">ERP_System.API/</span>
+    </div>
+    <div class="arch-arrow">↓ depends on →</div>
+    <div class="arch-layer layer-app">
+      <span class="layer-name">⚙️ Application Layer</span>
+      <span class="layer-desc">CQRS Commands/Queries, Handlers, DTOs, Mappings, Behaviors, Validators</span>
+      <span class="layer-files">ERP_System.Application/</span>
+    </div>
+    <div class="arch-arrow">↓ depends on →</div>
+    <div class="arch-layer layer-infra">
+      <span class="layer-name">🗄️ Infrastructure Layer</span>
+      <span class="layer-desc">EF Core DbContext, Repositories, UnitOfWork, Dapper, Migrations</span>
+      <span class="layer-files">ERP_System.Infrastructure/</span>
+    </div>
+    <div class="arch-arrow">↓ depends on →</div>
+    <div class="arch-layer layer-dom">
+      <span class="layer-name">🏛️ Domain Layer</span>
+      <span class="layer-desc">Entities, Interfaces, Enums, Exceptions — NO external dependencies</span>
+      <span class="layer-files">ERP_System.Domain/</span>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;" class="grid grid-2">
+    <div class="card">
+      <h3><span class="icon">📐</span> The Golden Rule</h3>
+      <p>Dependencies always point <b>inward</b>. Domain knows nothing about Infrastructure. Application knows nothing about Controllers.</p>
+      <div class="highlight">
+        <b>Why?</b> Swap EF Core for Dapper — only the Infrastructure layer changes. The rest of the app is untouched.
+      </div>
+    </div>
+    <div class="card">
+      <h3><span class="icon">📦</span> 8 Feature Modules</h3>
+      <div class="pills">
+        <span class="pill">Products</span>
+        <span class="pill-green">Orders</span>
+        <span class="pill-blue">Customers</span>
+        <span class="pill-red">Inventory</span>
+        <span class="pill-gold">Employees</span>
+        <span class="pill">Suppliers</span>
+        <span class="pill-green">Categories</span>
+        <span class="pill-blue">Warehouses</span>
+      </div>
+      <p style="margin-top:8px;">Each module has its own Commands, Queries, Handlers, DTOs and Repository.</p>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;" class="grid grid-3">
+    <div class="card">
+      <h3><span class="icon">🏛️</span> BaseEntity</h3>
+      <p>All entities inherit from <code>BaseEntity</code> which holds the common <code>Id</code> property.</p>
+      <div class="where"><span>📁 Domain/Entities/BaseEntity.cs</span></div>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🔠</span> Enums</h3>
+      <p>Domain-specific value types like <code>OrderStatus</code>, <code>EmployeeRole</code> etc., kept in the Domain layer.</p>
+      <div class="where"><span>📁 Domain/Enums/</span></div>
+    </div>
+    <div class="card">
+      <h3><span class="icon">💥</span> Custom Exceptions</h3>
+      <p>Domain exceptions thrown by business logic, caught by the global <code>ExceptionMiddleware</code> in the API layer.</p>
+      <div class="where"><span>📁 Domain/Exceptions/</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 2 — CQRS + MediatR
+══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-header">
+    <div class="num">2</div>
+    <h2>CQRS Pattern + MediatR</h2>
+    <span class="tag tag-pattern">Pattern</span>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h3><span class="icon">✍️</span> Command (Write Side)</h3>
+      <p>Commands mutate state. Named as <b>VerbNounCommand</b>. Returns the created/modified resource.</p>
+      <pre><span class="kw">public record</span> <span class="cl">CreateProductCommand</span>(
+    <span class="kw">string</span> Name,
+    <span class="kw">decimal</span> Price,
+    <span class="kw">int</span> CategoryId
+) : <span class="cl">IRequest</span>&lt;<span class="cl">ApiResponse</span>&lt;<span class="cl">ProductResponseDto</span>&gt;&gt;;
+
+<span class="kw">public class</span> <span class="cl">CreateProductCommandHandler</span>
+    : <span class="cl">IRequestHandler</span>&lt;<span class="cl">CreateProductCommand</span>, ...&gt;
+{
+    <span class="kw">public async</span> <span class="cl">Task</span>&lt;...&gt; <span class="nm">Handle</span>(...)
+    {  <span class="cm">/* business logic + repository call */</span>  }
+}</pre>
+      <div class="where"><span>📁 Application/Features/Products/Commands/CreateProduct/</span></div>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🔍</span> Query (Read Side)</h3>
+      <p>Queries only read data. Never change state. Named as <b>GetNounQuery</b> or <b>SearchNounQuery</b>.</p>
+      <pre><span class="kw">public record</span> <span class="cl">GetProductByIdQuery</span>(<span class="kw">int</span> Id)
+    : <span class="cl">IRequest</span>&lt;<span class="cl">ApiResponse</span>&lt;<span class="cl">ProductResponseDto</span>&gt;&gt;;
+
+<span class="kw">public class</span> <span class="cl">GetProductByIdQueryHandler</span>
+    : <span class="cl">IRequestHandler</span>&lt;<span class="cl">GetProductByIdQuery</span>, ...&gt;
+{
+    <span class="kw">public async</span> <span class="cl">Task</span>&lt;...&gt; <span class="nm">Handle</span>(...)
+    {  <span class="cm">/* just reads, never writes */</span>  }
+}</pre>
+      <div class="where"><span>📁 Application/Features/Products/Queries/GetProductById/</span></div>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;" class="card">
+    <h3><span class="icon">🔁</span> Request Flow — Controller → Handler → Repository</h3>
+    <div class="flow">
+      <div class="flow-step">HTTP Request</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Controller</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">_mediator.Send(cmd)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Pipeline Behaviors</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Handler</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Repository</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Database</div>
+    </div>
+    <div class="where" style="margin-top:10px;"><span>Controller: 1 line — await _mediator.Send(cmd). All logic lives in the Handler.</span></div>
+  </div>
+
+  <div style="margin-top:14px;" class="grid grid-3">
+    <div class="card">
+      <h3><span class="icon">📡</span> MediatR Setup</h3>
+      <p>Registered via <code>AddMediatR</code> scanning the Application assembly for all <code>IRequestHandler</code> implementations automatically.</p>
+      <div class="where"><span>📁 Application/DependencyInjection/ApplicationServices.cs</span></div>
+    </div>
+    <div class="card">
+      <h3><span class="icon">📝</span> record keyword</h3>
+      <p>Commands and Queries use C# <code>record</code> types for immutability. The <code>with</code> expression creates a copy with one field changed.</p>
+      <pre><span class="cm">// UpdateCommand uses record with:</span>
+<span class="kw">cmd with</span> { ProductId = id }</pre>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🧵</span> CancellationToken</h3>
+      <p>Passed to all async operations so long-running DB calls are cancelled if the HTTP client disconnects.</p>
+      <pre><span class="cl">GetAsync</span>(<span class="kw">int</span> id,
+    <span class="cl">CancellationToken</span> ct = <span class="kw">default</span>)</pre>
+      <div class="where"><span>📁 API/Controllers/ProductsController.cs</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 3 — Repository, UoW, Domain Interfaces
+══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-header">
+    <div class="num">3</div>
+    <h2>Repository Pattern + Unit of Work</h2>
+    <span class="tag tag-pattern">Pattern</span>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h3><span class="icon">📂</span> Repository Pattern</h3>
+      <p>Each entity has its own repository interface in <b>Domain</b> and concrete implementation in <b>Infrastructure</b>. The handler only talks to the interface — never directly to EF Core.</p>
+      <pre><span class="cm">// Domain — pure interface</span>
+<span class="kw">public interface</span> <span class="cl">IProductRepository</span>
+{
+    <span class="cl">Task</span>&lt;<span class="cl">Product</span>&gt; <span class="nm">GetByIdAsync</span>(<span class="kw">int</span> id);
+    <span class="cl">Task</span> <span class="nm">AddAsync</span>(<span class="cl">Product</span> product);
+    ...
+}
+
+<span class="cm">// Infrastructure — actual EF Core logic</span>
+<span class="kw">public class</span> <span class="cl">ProductRepository</span> : <span class="cl">IProductRepository</span>
+{
+    <span class="kw">private readonly</span> <span class="cl">AppDbContext</span> _ctx;
+    ...
+}</pre>
+      <div class="where"><span>📁 Domain/Interfaces/IProductRepository.cs</span><span>📁 Infrastructure/Persistence/Repositories/ProductRepository.cs</span></div>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🔗</span> Unit of Work (UoW)</h3>
+      <p>Wraps multiple repository operations into a single DB transaction. Ensures all-or-nothing saves.</p>
+      <pre><span class="kw">public interface</span> <span class="cl">IUnitOfWork</span>
+{
+    <span class="cl">Task</span> <span class="nm">BeginTransactionAsync</span>();
+    <span class="cl">Task</span>&lt;<span class="kw">int</span>&gt; <span class="nm">SaveChangesAsync</span>();
+    <span class="cl">Task</span> <span class="nm">CommitAsync</span>();
+    <span class="cl">Task</span> <span class="nm">RollbackAsync</span>();
+}
+<span class="cm">// Usage in Handler:</span>
+<span class="kw">await</span> _uow.<span class="nm">BeginTransactionAsync</span>();
+<span class="cm">// ... do work ...</span>
+<span class="kw">await</span> _uow.<span class="nm">SaveChangesAsync</span>();
+<span class="kw">await</span> _uow.<span class="nm">CommitAsync</span>();</pre>
+      <div class="where"><span>📁 Domain/Interfaces/IUnitOfWork.cs</span><span>📁 Infrastructure/Persistence/UnitOfWork.cs</span></div>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;" class="card">
+    <h3><span class="icon">💡</span> Why separate Interface (Domain) from Implementation (Infrastructure)?</h3>
+    <table>
+      <tr><th>Concern</th><th>Benefit</th></tr>
+      <tr><td>Testability</td><td>Mock <code>IProductRepository</code> in unit tests without needing a real DB</td></tr>
+      <tr><td>Flexibility</td><td>Swap EF Core for Dapper or another ORM by only changing Infrastructure</td></tr>
+      <tr><td>Dependency Rule</td><td>Application layer only depends on Domain — never on EF Core directly</td></tr>
+    </table>
+  </div>
+
+  <div style="margin-top:14px;" class="grid grid-3">
+    <div class="card">
+      <h3><span class="icon">🧩</span> 9 Repository Interfaces</h3>
+      <div class="pills">
+        <span class="pill">IProductRepository</span>
+        <span class="pill-green">IOrderRepository</span>
+        <span class="pill-blue">ICustomerRepository</span>
+        <span class="pill-red">IStockRepository</span>
+        <span class="pill-gold">IEmployeeRepository</span>
+        <span class="pill">ISupplierRepository</span>
+        <span class="pill-green">ICategoryRepository</span>
+        <span class="pill-blue">IWarehouseRepository</span>
+        <span class="pill-red">IUnitOfWork</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3><span class="icon">⚡</span> DI Registration</h3>
+      <p>Repositories registered as <code>Scoped</code> — one instance per HTTP request, matching EF Core's DbContext lifetime.</p>
+      <pre><span class="nm">services</span>.<span class="nm">AddScoped</span>&lt;
+    <span class="cl">IProductRepository</span>,
+    <span class="cl">ProductRepository</span>&gt;();</pre>
+      <div class="where"><span>📁 Infrastructure/DependencyInjection/</span></div>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🔒</span> Scoped vs Singleton vs Transient</h3>
+      <table>
+        <tr><th>Lifetime</th><th>Duration</th></tr>
+        <tr><td>Scoped</td><td>Per HTTP Request</td></tr>
+        <tr><td>Singleton</td><td>App lifetime</td></tr>
+        <tr><td>Transient</td><td>Every injection</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 4 — EF Core
+══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-header">
+    <div class="num">4</div>
+    <h2>Entity Framework Core</h2>
+    <span class="tag tag-db">Database</span>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h3><span class="icon">🗃️</span> DbContext — AppDbContext</h3>
+      <p>The bridge between C# entities and the SQL database. Holds <code>DbSet&lt;T&gt;</code> for each entity and fluent API configuration.</p>
+      <pre><span class="kw">public class</span> <span class="cl">AppDbContext</span> : <span class="cl">DbContext</span>
+{
+    <span class="kw">public</span> <span class="cl">DbSet</span>&lt;<span class="cl">Product</span>&gt; Products { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public</span> <span class="cl">DbSet</span>&lt;<span class="cl">Order</span>&gt; Orders { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public</span> <span class="cl">DbSet</span>&lt;<span class="cl">Customer</span>&gt; Customers { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="cm">// ... all 8 entities</span>
+    <span class="kw">protected override void</span> <span class="nm">OnModelCreating</span>(...)
+    {  <span class="cm">/* Fluent API config */</span>  }
+}</pre>
+      <div class="where"><span>📁 Infrastructure/Persistence/Context/AppDbContext.cs</span></div>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🏗️</span> Migrations</h3>
+      <p>EF Core tracks schema changes as versioned migration files. Run via CLI.</p>
+      <pre><span class="cm"># Create a migration</span>
+dotnet ef migrations add InitialCreate
+
+<span class="cm"># Apply to DB</span>
+dotnet ef database update
+
+<span class="cm"># Add index example</span>
+dotnet ef migrations add AddWarehouseIndex</pre>
+      <div class="where"><span>📁 Infrastructure/Migrations/</span><span>3 migration files in project</span></div>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;" class="grid grid-3">
+    <div class="card">
+      <h3><span class="icon">🔧</span> Fluent API</h3>
+      <p>Configure entity relationships, constraints, and indexes in <code>OnModelCreating</code> instead of Data Annotations — more power and less coupling.</p>
+      <pre><span class="nm">modelBuilder</span>.<span class="nm">Entity</span>&lt;<span class="cl">Product</span>&gt;()
+  .<span class="nm">HasOne</span>(p => p.Category)
+  .<span class="nm">WithMany</span>(c => c.Products)
+  .<span class="nm">HasForeignKey</span>(p => p.CategoryId);</pre>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🏭</span> AppDbContextFactory</h3>
+      <p>Implements <code>IDesignTimeDbContextFactory</code> so EF CLI tools can create a <code>DbContext</code> at design time (for migrations) without running the app.</p>
+      <div class="where"><span>📁 Infrastructure/Persistence/Context/AppDbContextFactory.cs</span></div>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🔗</span> Entity Relationships</h3>
+      <table>
+        <tr><th>Relationship</th><th>Example</th></tr>
+        <tr><td>One-to-Many</td><td>Category → Products</td></tr>
+        <tr><td>One-to-Many</td><td>Order → OrderItems</td></tr>
+        <tr><td>One-to-One</td><td>Product → Stock</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;" class="card">
+    <h3><span class="icon">📊</span> Key EF Core Concepts Used</h3>
+    <table>
+      <tr><th>Concept</th><th>How Used</th><th>Where</th></tr>
+      <tr><td>DbSet&lt;T&gt;</td><td>Querying/saving entities</td><td>AppDbContext.cs</td></tr>
+      <tr><td>SaveChangesAsync()</td><td>Persist tracked changes to DB</td><td>UnitOfWork.cs</td></tr>
+      <tr><td>AsNoTracking()</td><td>Read-only queries (better perf)</td><td>Query Handlers</td></tr>
+      <tr><td>Include() / ThenInclude()</td><td>Eager-loading related entities</td><td>Order/Product repos</td></tr>
+      <tr><td>migrations add / update</td><td>Schema evolution</td><td>CLI / Migrations/</td></tr>
+      <tr><td>IDesignTimeDbContextFactory</td><td>Enable CLI tools without app startup</td><td>AppDbContextFactory.cs</td></tr>
+    </table>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 5 — Dapper + ASP.NET Core API
+══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-header">
+    <div class="num">5</div>
+    <h2>Dapper (Micro-ORM) + ASP.NET Core Web API</h2>
+    <span class="tag tag-db">Database + API</span>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h3><span class="icon">⚡</span> Dapper — When &amp; Why</h3>
+      <p>Used alongside EF Core for performance-critical or complex raw SQL queries. EF Core handles writes; Dapper handles complex reads.</p>
+      <pre><span class="kw">public class</span> <span class="cl">DapperContext</span>
+{
+    <span class="kw">private readonly string</span> _conn;
+    <span class="kw">public</span> <span class="cl">IDbConnection</span> <span class="nm">CreateConnection</span>()
+        => <span class="kw">new</span> <span class="cl">SqlConnection</span>(_conn);
+}
+
+<span class="cm">// Usage:</span>
+<span class="kw">var</span> sql = <span class="st">"SELECT * FROM Products WHERE..."</span>;
+<span class="kw">var</span> result = <span class="kw">await</span> conn.<span class="nm">QueryAsync</span>&lt;<span class="cl">Product</span>&gt;(sql);</pre>
+      <div class="where"><span>📁 Infrastructure/Persistence/Context/DapperContext.cs</span></div>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🌐</span> ASP.NET Core Routing</h3>
+      <p>Controller-based routing with <code>[Route]</code> and <code>[Http*]</code> attributes.</p>
+      <pre><span class="at">[ApiController]</span>
+<span class="at">[Route(<span class="st">"api/[controller]"</span>)]</span>
+<span class="kw">public class</span> <span class="cl">ProductsController</span> : <span class="cl">ControllerBase</span>
+{
+    <span class="at">[HttpGet("{id}", Name = "GetProductById")]</span>
+    <span class="kw">public async</span> <span class="cl">Task</span>&lt;<span class="cl">IActionResult</span>&gt; <span class="nm">GetAsync</span>(<span class="kw">int</span> id)
+
+    <span class="at">[HttpPost("create")]</span>
+    <span class="kw">public async</span> <span class="cl">Task</span>&lt;<span class="cl">IActionResult</span>&gt; <span class="nm">CreateAsync</span>(...)
+
+    <span class="at">[HttpPut("{id}")]</span>
+    <span class="at">[HttpDelete("{id}")]</span>
+}</pre>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;" class="grid grid-2">
+    <div class="card">
+      <h3><span class="icon">📍</span> CreatedAtRoute — The Fix</h3>
+      <p><b>Problem:</b> <code>CreatedAtAction(nameof(GetAsync), ...)</code> fails because ASP.NET Core strips the <code>Async</code> suffix from action names in the route table by default (<code>SuppressAsyncSuffixInActionNames = true</code>).</p>
+      <pre><span class="cm">// ❌ WRONG — "GetAsync" not in route table</span>
+<span class="kw">return</span> <span class="nm">CreatedAtAction</span>(<span class="nm">nameof</span>(GetAsync), ...);
+
+<span class="cm">// ✅ CORRECT — use named route</span>
+<span class="at">[HttpGet("{id}", Name = "GetProductById")]</span>
+...
+<span class="kw">return</span> <span class="nm">CreatedAtRoute</span>(
+    <span class="st">"GetProductById"</span>,
+    <span class="kw">new</span> { id = result.Data!.Id },
+    result);</pre>
+      <div class="highlight"><b>Key Insight:</b> <code>CreatedAtRoute</code> resolves by route name, not action name — immune to the Async suffix stripping issue.</div>
+    </div>
+    <div class="card">
+      <h3><span class="icon">📋</span> Action Result Types</h3>
+      <table>
+        <tr><th>Method</th><th>HTTP Status</th><th>Used When</th></tr>
+        <tr><td>Ok(data)</td><td>200</td><td>Successful GET/PUT/DELETE</td></tr>
+        <tr><td>CreatedAtRoute(...)</td><td>201</td><td>Successful POST</td></tr>
+        <tr><td>NoContent()</td><td>204</td><td>Successful DELETE, no body</td></tr>
+        <tr><td>BadRequest(err)</td><td>400</td><td>Validation error</td></tr>
+        <tr><td>NotFound()</td><td>404</td><td>Resource missing</td></tr>
+        <tr><td>StatusCode(n, data)</td><td>n</td><td>Custom HTTP codes</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 6 — Pipeline Behaviors, AutoMapper, Validation
+══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-header">
+    <div class="num">6</div>
+    <h2>MediatR Behaviors + AutoMapper + Validation</h2>
+    <span class="tag tag-pattern">Cross-Cutting Concerns</span>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h3><span class="icon">🔗</span> Pipeline Behaviors (Middleware for Handlers)</h3>
+      <p>Behaviors wrap every request/handler pair — like middleware but at the MediatR level. Run in registration order.</p>
+      <pre><span class="kw">public class</span> <span class="cl">ValidationBehavior</span>&lt;TReq, TRes&gt;
+    : <span class="cl">IPipelineBehavior</span>&lt;TReq, TRes&gt;
+{
+    <span class="kw">public async</span> <span class="cl">Task</span>&lt;TRes&gt; <span class="nm">Handle</span>(
+        TReq req, <span class="cl">RequestHandlerDelegate</span>&lt;TRes&gt; next, ...)
+    {
+        <span class="cm">// validate BEFORE calling next()</span>
+        <span class="kw">await</span> <span class="nm">next</span>(); <span class="cm">// calls actual handler</span>
+    }
+}</pre>
+      <div class="where"><span>📁 Application/Common/Behaviors/ValidationBehavior.cs</span><span>📁 Application/Common/Behaviors/LoggingBehaviors.cs</span></div>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🗺️</span> AutoMapper</h3>
+      <p>Maps between domain Entities and DTOs (Data Transfer Objects). No manual property copying.</p>
+      <pre><span class="kw">public class</span> <span class="cl">ProductMappingProfiles</span>
+    : <span class="cl">Profile</span>
+{
+    <span class="kw">public</span> <span class="nm">ProductMappingProfiles</span>()
+    {
+        <span class="nm">CreateMap</span>&lt;<span class="cl">Product</span>, <span class="cl">ProductResponseDto</span>&gt;();
+        <span class="nm">CreateMap</span>&lt;<span class="cl">CreateProductCommand</span>, <span class="cl">Product</span>&gt;();
+    }
+}
+<span class="cm">// Usage in handler:</span>
+<span class="kw">var</span> dto = _mapper.<span class="nm">Map</span>&lt;<span class="cl">ProductResponseDto</span>&gt;(product);</pre>
+      <div class="where"><span>📁 Application/Mappings/ — 7 mapping profiles</span></div>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;" class="grid grid-2">
+    <div class="card">
+      <h3><span class="icon">✅</span> FluentValidation</h3>
+      <p>Validators defined as classes, run automatically via <code>ValidationBehavior</code> before the handler executes.</p>
+      <pre><span class="kw">public class</span> <span class="cl">CreateProductCommandValidator</span>
+    : <span class="cl">AbstractValidator</span>&lt;<span class="cl">CreateProductCommand</span>&gt;
+{
+    <span class="kw">public</span> <span class="nm">CreateProductCommandValidator</span>()
+    {
+        <span class="nm">RuleFor</span>(x => x.Name)
+            .<span class="nm">NotEmpty</span>()
+            .<span class="nm">MaximumLength</span>(<span class="nm">100</span>);
+        <span class="nm">RuleFor</span>(x => x.Price)
+            .<span class="nm">GreaterThan</span>(<span class="nm">0</span>);
+    }
+}</pre>
+    </div>
+    <div class="card">
+      <h3><span class="icon">📦</span> ApiResponse&lt;T&gt; — Wrapper</h3>
+      <p>All endpoints return a consistent <code>ApiResponse&lt;T&gt;</code> with <code>Success</code>, <code>Message</code>, and <code>Data</code> fields.</p>
+      <pre><span class="kw">public class</span> <span class="cl">ApiResponse</span>&lt;T&gt;
+{
+    <span class="kw">public bool</span> Success { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public string</span> Message { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public</span> T? Data { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="kw">public static</span> <span class="cl">ApiResponse</span>&lt;T&gt; <span class="nm">Ok</span>(T data)
+        => <span class="kw">new</span>() { Success = <span class="kw">true</span>, Data = data };
+    <span class="kw">public static</span> <span class="cl">ApiResponse</span>&lt;T&gt; <span class="nm">Fail</span>(<span class="kw">string</span> msg)
+        => <span class="kw">new</span>() { Success = <span class="kw">false</span>, Message = msg };
+}</pre>
+      <div class="where"><span>📁 Application/Common/ApiResponse.cs</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 7 — Infrastructure, DI, Swagger, Middleware
+══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-header">
+    <div class="num">7</div>
+    <h2>Infrastructure, DI, Swagger &amp; Middleware</h2>
+    <span class="tag tag-infra">Infrastructure</span>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h3><span class="icon">🔌</span> Dependency Injection (DI)</h3>
+      <p>Each layer exposes an extension method to register its own services. <code>Program.cs</code> calls all of them cleanly.</p>
+      <pre><span class="cm">// Program.cs — clean startup</span>
+builder.Services.<span class="nm">AddInfrastructureServices</span>(config);
+builder.Services.<span class="nm">AddApplication</span>();
+builder.Services.<span class="nm">AddControllers</span>();
+builder.Services.<span class="nm">AddMemoryCache</span>();
+
+<span class="cm">// ApplicationServices.cs registers:</span>
+<span class="cm">// MediatR, FluentValidation, Behaviors</span>
+
+<span class="cm">// InfrastructureServices.cs registers:</span>
+<span class="cm">// DbContext, Repositories, UnitOfWork</span></pre>
+      <div class="where"><span>📁 Application/DependencyInjection/ApplicationServices.cs</span><span>📁 Infrastructure/DependencyInjection/InfrastructureServices.cs</span></div>
+    </div>
+    <div class="card">
+      <h3><span class="icon">📖</span> Swagger / OpenAPI</h3>
+      <p>Auto-generates interactive API documentation from controller attributes and XML comments.</p>
+      <pre><span class="cm">// Registration</span>
+builder.Services.<span class="nm">AddSwaggerGen</span>(c => {
+    c.<span class="nm">SwaggerDoc</span>(<span class="st">"v1"</span>, <span class="kw">new</span>() {
+        Title = <span class="st">"ERP System API"</span>,
+        Version = <span class="st">"v1"</span>
+    });
+});
+<span class="cm">// Middleware</span>
+app.<span class="nm">UseSwagger</span>();
+app.<span class="nm">UseSwaggerUI</span>(c =>
+    c.RoutePrefix = <span class="kw">string</span>.Empty); <span class="cm">// serves at /</span></pre>
+      <div class="where"><span>📁 API/Program.cs — served at root URL</span></div>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;" class="grid grid-2">
+    <div class="card">
+      <h3><span class="icon">🛡️</span> Exception Middleware</h3>
+      <p>Global error handler. Catches all unhandled exceptions and returns a structured JSON error response instead of a 500 crash page.</p>
+      <pre><span class="cm">// Program.cs — registered FIRST in pipeline</span>
+app.<span class="nm">UseMiddleware</span>&lt;<span class="cl">ExceptionMiddleware</span>&gt;();
+
+<span class="cm">// Inside ExceptionMiddleware:</span>
+<span class="kw">try</span> { <span class="kw">await</span> _next(context); }
+<span class="kw">catch</span> (<span class="cl">Exception</span> ex) {
+    <span class="cm">// write structured error JSON</span>
+}</pre>
+      <div class="where"><span>📁 API/Presentation/ — ExceptionMiddleware.cs</span></div>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🌍</span> CORS</h3>
+      <p>Cross-Origin Resource Sharing — allows the API to be called from frontend apps on different domains.</p>
+      <pre><span class="cm">// Policy registration</span>
+builder.Services.<span class="nm">AddCors</span>(o =>
+    o.<span class="nm">AddPolicy</span>(<span class="st">"AllowAll"</span>, p =>
+        p.<span class="nm">AllowAnyOrigin</span>()
+         .<span class="nm">AllowAnyMethod</span>()
+         .<span class="nm">AllowAnyHeader</span>()));
+
+<span class="cm">// Applied in pipeline</span>
+app.<span class="nm">UseCors</span>(<span class="st">"AllowAll"</span>);</pre>
+      <div class="where"><span>📁 API/Program.cs</span></div>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;" class="card">
+    <h3><span class="icon">⚙️</span> ASP.NET Core Middleware Pipeline Order (Matters!)</h3>
+    <div class="flow">
+      <div class="flow-step">ExceptionMiddleware</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">UseSwagger</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">UseCors</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">UseHttpsRedirection</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">UseAuthorization</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">MapControllers</div>
+    </div>
+    <div class="highlight"><b>Rule:</b> Exception middleware must be FIRST — it wraps everything else. CORS must be BEFORE MapControllers. Authorization before Controllers.</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 8 — Quick Reference + Tips
+══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-header">
+    <div class="num">8</div>
+    <h2>Quick Reference — Patterns, Gotchas &amp; CLI</h2>
+    <span class="tag tag-api">Reference</span>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h3><span class="icon">⚠️</span> Common Gotchas Encountered</h3>
+      <table>
+        <tr><th>Issue</th><th>Root Cause</th><th>Fix</th></tr>
+        <tr><td>No route matches supplied values</td><td>SuppressAsyncSuffixInActionNames strips "Async"</td><td>Use CreatedAtRoute + named route</td></tr>
+        <tr><td>Circular reference in JSON</td><td>Navigation properties referencing each other</td><td>Add ReferenceHandler.Preserve or JsonIgnore</td></tr>
+        <tr><td>Migrations fail at design time</td><td>AppDbContext can't be resolved without app running</td><td>IDesignTimeDbContextFactory</td></tr>
+        <tr><td>AutoMapper missing config</td><td>Assembly not scanned</td><td>cfg.AddMaps(typeof(X).Assembly)</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🖥️</span> Essential CLI Commands</h3>
+      <pre><span class="cm"># EF Core Migrations</span>
+dotnet ef migrations add &lt;Name&gt; \
+  --project ERP_System.Infrastructure \
+  --startup-project ERP_System.API
+
+dotnet ef database update \
+  --startup-project ERP_System.API
+
+<span class="cm"># Run API</span>
+dotnet run --project ERP_System.API
+
+<span class="cm"># Build solution</span>
+dotnet build
+
+<span class="cm"># Restore NuGet packages</span>
+dotnet restore</pre>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;" class="grid grid-2">
+    <div class="card">
+      <h3><span class="icon">📦</span> Key NuGet Packages Used</h3>
+      <table>
+        <tr><th>Package</th><th>Purpose</th></tr>
+        <tr><td>MediatR</td><td>CQRS request dispatching</td></tr>
+        <tr><td>Microsoft.EntityFrameworkCore</td><td>ORM — Code First DB</td></tr>
+        <tr><td>Dapper</td><td>Micro-ORM for raw SQL</td></tr>
+        <tr><td>AutoMapper</td><td>Entity ↔ DTO mapping</td></tr>
+        <tr><td>FluentValidation.AspNetCore</td><td>Model validation</td></tr>
+        <tr><td>Swashbuckle.AspNetCore</td><td>Swagger UI</td></tr>
+        <tr><td>Microsoft.Data.SqlClient</td><td>SQL Server low-level driver</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧠</span> Naming Conventions</h3>
+      <table>
+        <tr><th>Type</th><th>Convention</th><th>Example</th></tr>
+        <tr><td>Command</td><td>VerbNounCommand</td><td>CreateProductCommand</td></tr>
+        <tr><td>Query</td><td>GetNounQuery</td><td>GetProductByIdQuery</td></tr>
+        <tr><td>Handler</td><td>[Command/Query]Handler</td><td>CreateProductCommandHandler</td></tr>
+        <tr><td>Repository</td><td>I[Noun]Repository</td><td>IProductRepository</td></tr>
+        <tr><td>DTO</td><td>[Noun]ResponseDto</td><td>ProductResponseDto</td></tr>
+        <tr><td>Mapping</td><td>[Noun]MappingProfiles</td><td>ProductMappingProfiles</td></tr>
+        <tr><td>Route Name</td><td>Get[Noun]By[Field]</td><td>GetProductById</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;" class="card">
+    <h3><span class="icon">🗺️</span> Everything at a Glance — Where Each Concept Lives</h3>
+    <table>
+      <tr><th>Concept</th><th>Layer</th><th>File/Folder</th></tr>
+      <tr><td>Domain Entities</td><td>Domain</td><td>Domain/Entities/*.cs</td></tr>
+      <tr><td>Repository Interfaces</td><td>Domain</td><td>Domain/Interfaces/I*Repository.cs</td></tr>
+      <tr><td>Commands + Handlers</td><td>Application</td><td>Application/Features/*/Commands/</td></tr>
+      <tr><td>Queries + Handlers</td><td>Application</td><td>Application/Features/*/Queries/</td></tr>
+      <tr><td>DTOs</td><td>Application</td><td>Application/DTOs/</td></tr>
+      <tr><td>AutoMapper Profiles</td><td>Application</td><td>Application/Mappings/</td></tr>
+      <tr><td>Pipeline Behaviors</td><td>Application</td><td>Application/Common/Behaviors/</td></tr>
+      <tr><td>ApiResponse wrapper</td><td>Application</td><td>Application/Common/ApiResponse.cs</td></tr>
+      <tr><td>DbContext + Migrations</td><td>Infrastructure</td><td>Infrastructure/Persistence/Context/</td></tr>
+      <tr><td>Repository Implementations</td><td>Infrastructure</td><td>Infrastructure/Persistence/Repositories/</td></tr>
+      <tr><td>Unit of Work</td><td>Infrastructure</td><td>Infrastructure/Persistence/UnitOfWork.cs</td></tr>
+      <tr><td>Dapper Connection</td><td>Infrastructure</td><td>Infrastructure/Persistence/Context/DapperContext.cs</td></tr>
+      <tr><td>Controllers</td><td>API</td><td>API/Controllers/</td></tr>
+      <tr><td>Middleware</td><td>API</td><td>API/Presentation/ExceptionMiddleware.cs</td></tr>
+      <tr><td>DI Setup</td><td>API</td><td>API/Program.cs</td></tr>
+    </table>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 9 — What You Can Add & Learn Next
+══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-header">
+    <div class="num">9</div>
+    <h2>What You Can Add &amp; Learn Next</h2>
+    <span class="tag tag-infra">Roadmap</span>
+  </div>
+
+  <div class="grid grid-2">
+
+    <!-- JWT Auth -->
+    <div class="card">
+      <h3><span class="icon">🔑</span> JWT Authentication &amp; Authorization</h3>
+      <p><b>What:</b> Secure API endpoints with JSON Web Tokens. Users log in, get a signed token, and pass it in every request.</p>
+      <pre><span class="cm">// Program.cs</span>
+builder.Services.<span class="nm">AddAuthentication</span>(<span class="cl">JwtBearerDefaults</span>.AuthScheme)
+  .<span class="nm">AddJwtBearer</span>(o => o.TokenValidationParameters = ...);
+
+<span class="cm">// Controller</span>
+<span class="at">[Authorize]</span>           <span class="cm">// 🔒 any logged-in user</span>
+<span class="at">[Authorize(Roles = "Admin")]</span>  <span class="cm">// 🔒 admin only</span></pre>
+      <div class="where">
+        <span>📁 Add: Infrastructure/Auth/JwtTokenService.cs</span>
+        <span>📦 Package: Microsoft.AspNetCore.Authentication.JwtBearer</span>
+      </div>
+    </div>
+
+    <!-- Redis -->
+    <div class="card">
+      <h3><span class="icon">🟥</span> Redis — Distributed Caching</h3>
+      <p><b>What:</b> Cache frequently-read data (product lists, categories) in an in-memory store. Orders of magnitude faster than hitting the DB every time.</p>
+      <pre><span class="cm">// Register</span>
+builder.Services.<span class="nm">AddStackExchangeRedisCache</span>(o =>
+    o.Configuration = <span class="st">"localhost:6379"</span>);
+
+<span class="cm">// Use in Handler</span>
+<span class="kw">var</span> cached = <span class="kw">await</span> _cache.<span class="nm">GetStringAsync</span>(<span class="st">"products"</span>);
+<span class="kw">if</span> (cached != <span class="kw">null</span>) <span class="kw">return</span> <span class="cl">JsonConvert</span>.<span class="nm">Deserialize</span>(cached);</pre>
+      <div class="where">
+        <span>📁 Add: Infrastructure/Caching/RedisCacheService.cs</span>
+        <span>📦 Package: Microsoft.Extensions.Caching.StackExchangeRedis</span>
+      </div>
+    </div>
+
+    <!-- Rate Limiting -->
+    <div class="card">
+      <h3><span class="icon">🚦</span> Rate Limiting</h3>
+      <p><b>What:</b> Protect your API from abuse by limiting how many requests a client can make per time window. Built into ASP.NET Core 7+.</p>
+      <pre><span class="cm">// Program.cs</span>
+builder.Services.<span class="nm">AddRateLimiter</span>(o =>
+    o.<span class="nm">AddFixedWindowLimiter</span>(<span class="st">"fixed"</span>, opt => {
+        opt.Window = <span class="cl">TimeSpan</span>.<span class="nm">FromSeconds</span>(<span class="nm">10</span>);
+        opt.PermitLimit = <span class="nm">20</span>;
+    }));
+app.<span class="nm">UseRateLimiter</span>();
+
+<span class="at">[EnableRateLimiting("fixed")]</span>  <span class="cm">// on controller</span></pre>
+      <div class="where">
+        <span>📁 Add config in: API/Program.cs</span>
+        <span>📦 Package: Built-in (System.Threading.RateLimiting)</span>
+      </div>
+    </div>
+
+    <!-- Background Jobs -->
+    <div class="card">
+      <h3><span class="icon">⏰</span> Background Jobs — Hangfire</h3>
+      <p><b>What:</b> Run scheduled or queued tasks outside the HTTP request cycle. Great for: sending order confirmation emails, generating daily sales reports, stock alerts.</p>
+      <pre><span class="cm">// Register</span>
+builder.Services.<span class="nm">AddHangfire</span>(c =>
+    c.<span class="nm">UseSqlServerStorage</span>(connStr));
+
+<span class="cm">// Enqueue a job</span>
+<span class="cl">BackgroundJob</span>.<span class="nm">Enqueue</span>(
+    () => emailService.<span class="nm">SendOrderConfirmation</span>(orderId));
+
+<span class="cm">// Recurring job</span>
+<span class="cl">RecurringJob</span>.<span class="nm">AddOrUpdate</span>(
+    <span class="st">"daily-report"</span>, () => ..., Cron.Daily);</pre>
+      <div class="where">
+        <span>📁 Add: Infrastructure/Jobs/</span>
+        <span>📦 Package: Hangfire.AspNetCore + Hangfire.SqlServer</span>
+      </div>
+    </div>
+
+    <!-- SignalR -->
+    <div class="card">
+      <h3><span class="icon">📡</span> SignalR — Real-Time Notifications</h3>
+      <p><b>What:</b> Push live updates from server to client over WebSockets. Ideal for: low-stock alerts dashboard, live order status, inventory level changes.</p>
+      <pre><span class="cm">// Hub</span>
+<span class="kw">public class</span> <span class="cl">StockHub</span> : <span class="cl">Hub</span>
+{
+    <span class="kw">public async</span> <span class="cl">Task</span> <span class="nm">SendLowStockAlert</span>(<span class="kw">string</span> msg)
+        => <span class="kw">await</span> Clients.All.<span class="nm">SendAsync</span>(<span class="st">"LowStock"</span>, msg);
+}
+<span class="cm">// Register + map</span>
+builder.Services.<span class="nm">AddSignalR</span>();
+app.<span class="nm">MapHub</span>&lt;<span class="cl">StockHub</span>&gt;(<span class="st">"/hubs/stock"</span>);</pre>
+      <div class="where">
+        <span>📁 Add: API/Hubs/StockHub.cs</span>
+        <span>📦 Package: Microsoft.AspNetCore.SignalR (built-in)</span>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="card">
+      <h3><span class="icon">📄</span> Pagination + Sorting + Filtering</h3>
+      <p><b>What:</b> Return large datasets in pages instead of all at once. Add a <code>PagedResult&lt;T&gt;</code> wrapper and accept <code>pageNumber</code>/<code>pageSize</code> in queries.</p>
+      <pre><span class="kw">public record</span> <span class="cl">GetAllProductsQuery</span>(
+    <span class="kw">int</span> Page = <span class="nm">1</span>,
+    <span class="kw">int</span> PageSize = <span class="nm">10</span>,
+    <span class="kw">string</span>? SortBy = <span class="kw">null</span>
+) : <span class="cl">IRequest</span>&lt;...&gt;;
+
+<span class="cm">// EF Core</span>
+query.<span class="nm">Skip</span>((page - <span class="nm">1</span>) * pageSize).<span class="nm">Take</span>(pageSize);</pre>
+      <div class="where">
+        <span>📁 Add: Application/Common/PagedResult.cs</span>
+        <span>📦 Package: X.PagedList or built-in LINQ</span>
+      </div>
+    </div>
+
+    <!-- Unit Testing -->
+    <div class="card">
+      <h3><span class="icon">🧪</span> Unit Testing + Integration Testing</h3>
+      <p><b>What:</b> Test Handlers in isolation using mocked repositories. Clean Architecture makes this easy — handlers only depend on interfaces.</p>
+      <pre><span class="cm">// xUnit + Moq</span>
+<span class="kw">var</span> repoMock = <span class="kw">new</span> <span class="cl">Mock</span>&lt;<span class="cl">IProductRepository</span>&gt;();
+repoMock.<span class="nm">Setup</span>(r => r.<span class="nm">GetByIdAsync</span>(<span class="nm">1</span>))
+        .<span class="nm">ReturnsAsync</span>(fakeProduct);
+
+<span class="kw">var</span> handler = <span class="kw">new</span> <span class="cl">GetProductByIdQueryHandler</span>(
+    repoMock.Object, mapperMock.Object);
+<span class="kw">var</span> result = <span class="kw">await</span> handler.<span class="nm">Handle</span>(query, ct);</pre>
+      <div class="where">
+        <span>📁 Add: ERP_System.Tests/ project</span>
+        <span>📦 Package: xUnit + Moq + FluentAssertions</span>
+      </div>
+    </div>
+
+    <!-- Health Checks -->
+    <div class="card">
+      <h3><span class="icon">💓</span> Health Checks + Serilog Logging</h3>
+      <p><b>What:</b> <b>Health Checks</b> expose a <code>/health</code> endpoint for monitoring (DB alive? Redis alive?). <b>Serilog</b> replaces the default logger with structured, queryable logs.</p>
+      <pre><span class="cm">// Health Checks</span>
+builder.Services.<span class="nm">AddHealthChecks</span>()
+  .<span class="nm">AddSqlServer</span>(connStr)
+  .<span class="nm">AddRedis</span>(<span class="st">"localhost:6379"</span>);
+app.<span class="nm">MapHealthChecks</span>(<span class="st">"/health"</span>);
+
+<span class="cm">// Serilog</span>
+<span class="cl">Log</span>.Logger = <span class="kw">new</span> <span class="cl">LoggerConfiguration</span>()
+  .<span class="nm">WriteTo</span>.<span class="nm">Console</span>()
+  .<span class="nm">WriteTo</span>.<span class="nm">File</span>(<span class="st">"logs/erp.log"</span>)
+  .<span class="nm">CreateLogger</span>();</pre>
+      <div class="where">
+        <span>📦 AspNetCore.HealthChecks.SqlServer + Serilog.AspNetCore</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:14px;" class="card">
+    <h3><span class="icon">🗺️</span> Learning Roadmap — Priority Order for This ERP Project</h3>
+    <table>
+      <tr><th>#</th><th>Topic</th><th>Why First?</th><th>Difficulty</th><th>ERP Benefit</th></tr>
+      <tr><td>1</td><td>JWT Auth</td><td>Security is foundational — every real API needs it</td><td>⭐⭐⭐</td><td>Protect all endpoints, role-based access (Admin/Staff)</td></tr>
+      <tr><td>2</td><td>Pagination</td><td>Products/Orders lists will grow — returning all rows is dangerous</td><td>⭐⭐</td><td>Scale all GetAll endpoints safely</td></tr>
+      <tr><td>3</td><td>Unit Testing</td><td>Clean Architecture was designed for this — practice it now</td><td>⭐⭐⭐</td><td>Confidence when refactoring handlers</td></tr>
+      <tr><td>4</td><td>Redis Caching</td><td>Reduces DB load for read-heavy product/category queries</td><td>⭐⭐⭐</td><td>Dramatically faster GetAll, Search endpoints</td></tr>
+      <tr><td>5</td><td>Serilog</td><td>Structured logs are essential for debugging production issues</td><td>⭐⭐</td><td>Track all request flows with correlation IDs</td></tr>
+      <tr><td>6</td><td>Background Jobs</td><td>Async tasks like email/reports shouldn't block HTTP responses</td><td>⭐⭐⭐</td><td>Order confirmation emails, daily stock reports</td></tr>
+      <tr><td>7</td><td>Rate Limiting</td><td>Prevent API abuse, easy to add in .NET 7+</td><td>⭐⭐</td><td>Protect endpoints from brute-force/scraping</td></tr>
+      <tr><td>8</td><td>SignalR</td><td>Real-time is advanced but impressive in an ERP dashboard</td><td>⭐⭐⭐⭐</td><td>Live low-stock alerts, live order tracking</td></tr>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>

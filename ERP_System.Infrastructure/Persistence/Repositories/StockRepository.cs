@@ -22,17 +22,12 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
             _context = context;
             _dapperContext = dapperContext;
         } 
-
-
-
         public async Task<int> AddAsync(Stock stock, CancellationToken ct)
         {
             _context.Stocks.Add(stock);
             await _context.SaveChangesAsync();
             return stock.StockId;
         }
-
-
         public async Task<Stock?> GetByProductAndWarehouseAsync(int productId, int warehouseId, CancellationToken ct)
         {
             var cacheKey = $"stock:{productId}:{warehouseId}";
@@ -62,18 +57,14 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
                 new { ProductId = productId, WarehouseId = warehouseId },
                 splitOn: "ProductId,WarehouseId");
 
-            
             var stock = res.FirstOrDefault();
-
             var cachedOptions = new MemoryCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2) 
             };
             
             _cache.Set(cacheKey, stock, cachedOptions);
-
             return stock;
-
         }
 
         public async Task<IEnumerable<Stock>> GetByProductAsync(int productId, CancellationToken ct)
@@ -103,16 +94,13 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
                 splitOn: "ProductId,WarehouseId");
 
             var stocks = res.ToList();   
-
             var cachedOptions = new MemoryCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
             };
 
             _cache.Set(cacheKey, stocks, cachedOptions);
-
-            return stocks;
-                            
+            return stocks;             
         }
 
         public async Task<IEnumerable<Stock>> GetLowStockItemsAsync(CancellationToken ct)
@@ -142,16 +130,13 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
                 splitOn: "ProductId,WarehouseId");
 
             var stocks = res.ToList();
-
             var cacheOptions = new MemoryCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
             };
 
             _cache.Set(cacheKey, stocks, cacheOptions);
-
             return stocks;
-
         }
 
         public async Task<int> GetTotalStockAsync(int productId, CancellationToken ct)
@@ -175,7 +160,6 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
             };
 
             _cache.Set(cacheKey, res, cacheOptions);
-
             return res;
         }
 
@@ -190,8 +174,11 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
 
         public async Task UpdateAsync(Stock stock, CancellationToken ct)
         {
-            _context.Stocks.Update(stock);
-            await _context.SaveChangesAsync();
+            if (stock.Product != null)
+                _context.Entry(stock.Product).State = EntityState.Unchanged;
+
+            _context.Stocks.Attach(stock);
+            _context.Entry(stock).Property(s => s.Quantity).IsModified = true;
         }
     }
 }

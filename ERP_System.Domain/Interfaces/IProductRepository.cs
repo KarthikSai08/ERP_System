@@ -14,5 +14,6 @@ namespace ERP_System.Domain.Interfaces
         Task<int> AddAsync(Product product, CancellationToken ct);
         Task UpdateAsync(Product product, CancellationToken ct);
         Task DeleteAsync(int id, CancellationToken ct);
+        Task<Product?> GetProductOnlyAsync(int id, CancellationToken ct);
     }
 }

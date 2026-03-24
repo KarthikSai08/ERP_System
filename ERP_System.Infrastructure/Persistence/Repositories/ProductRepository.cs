@@ -1,7 +1,8 @@
-﻿using Dapper;
+using Dapper;
 using ERP_System.Domain.Entities;
 using ERP_System.Domain.Interfaces;
 using ERP_System.Infrastructure.Persistence.Context;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -65,13 +66,16 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
             return result;
         }
 
-        public async Task<Product?> GetByIdAsync(int id,CancellationToken ct)
+        public async Task<Product?> GetByIdAsync(int id, CancellationToken ct)
         {
             using var con = _dapperContext.CreateConnection();
-            var sql = @"SELECT p.*, c.CategoryName, c.Description, c.IsActive
-                        FROM Products p
-                        LEFT JOIN Categories c On p.CategoryId = c.CategoryId
-                        WHERE p.ProductId = @Id";
+            var sql = @"SELECT p.ProductId, p.ProductName, p.SKU, p.Description,
+                       p.Price, p.CostPrice, p.IsActive, p.CreatedAt, p.UpdatedAt,
+                       p.CategoryId,
+                       c.CategoryName, c.Description as CategoryDescription, c.IsActive as CategoryIsActive
+                FROM Products p
+                LEFT JOIN Categories c ON p.CategoryId = c.CategoryId
+                WHERE p.ProductId = @Id";
 
             var result = await con.QueryAsync<Product, Category, Product>(
                 sql,
@@ -81,10 +85,9 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
                     return product;
                 },
                 new { Id = id },
-                splitOn: "ProductId");
+                splitOn: "CategoryId");
 
             return result.FirstOrDefault();
-                        
         }
 
         public async Task<IEnumerable<Product>> SearchAsync(string? name, int? categoryId, decimal? maxPrice,CancellationToken ct)
@@ -138,8 +141,23 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
 
         public async Task UpdateAsync(Product product, CancellationToken ct)
         {
+            if (product.Category != null)
+                _context.Entry(product.Category).State = EntityState.Unchanged;
+
             _context.Products.Update(product);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(ct);
         }
+
+        public async Task<Product?> GetProductOnlyAsync(int id, CancellationToken ct)
+{
+    using var con = _dapperContext.CreateConnection();
+    var sql = @"SELECT p.ProductId, p.ProductName, p.SKU, p.Description,
+                       p.Price, p.CostPrice, p.IsActive, p.CreatedAt, p.UpdatedAt,
+                       p.CategoryId
+                FROM Products p
+                WHERE p.ProductId = @Id";
+
+    return await con.QuerySingleOrDefaultAsync<Product>(sql, new { Id = id });
+}
     }
 }

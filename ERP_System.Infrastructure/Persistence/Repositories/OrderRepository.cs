@@ -16,6 +16,13 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
     {
         private readonly AppDbContext _context;
         private readonly DapperContext _dapper;
+
+        public OrderRepository(AppDbContext context, DapperContext dapper)
+        {
+            _context = context;
+            _dapper = dapper;
+        }
+
         public async Task<int> AddAsync(Order order, CancellationToken ct)
         {
             _context.Orders.Add(order);
@@ -68,17 +75,17 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
             using var con = _dapper.CreateConnection();
             var sql = @"
             SELECT
-                p.Name  AS ProductName,
+                p.ProductName  AS ProductName,
                 p.SKU   AS SKU,
                 SUM(oi.Quantity)                                   AS TotalQuantitySold,
                 SUM(oi.TotalPrice)                                 AS TotalRevenue,
-                SUM(oi.TotalPrice - (p.CostPrice  \\\\\\\* oi.Quantity))   AS TotalProfit
+                SUM(oi.TotalPrice - (p.CostPrice * oi.Quantity))   AS TotalProfit
             FROM OrderItems oi
-            INNER JOIN Products p ON oi.ProductId = p.Id
-            INNER JOIN Orders   o ON oi.OrderId   = o.Id
+            INNER JOIN Products p ON oi.ProductId = p.ProductId
+            INNER JOIN Orders   o ON oi.OrderId   = o.OrderId
             WHERE o.OrderDate BETWEEN @From AND @To
               AND o.Status NOT IN (5)
-            GROUP BY p.Name, p.SKU
+            GROUP BY p.ProductName, p.SKU
             ORDER BY TotalRevenue DESC";
 
             return await con.QueryAsync<SalesReportResponseDto>(sql, new { From = from, To = to });

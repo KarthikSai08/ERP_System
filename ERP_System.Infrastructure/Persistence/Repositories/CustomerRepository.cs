@@ -11,6 +11,10 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
     public class CustomerRepository : ICustomerRepository
     {
         private readonly AppDbContext _context;
+        public CustomerRepository(AppDbContext context)
+        {
+            _context = context;
+        }
 
         public async Task<int> AddAsync(Customer customer, CancellationToken ct)
         {
