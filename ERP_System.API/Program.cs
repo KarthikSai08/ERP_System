@@ -40,6 +40,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionMiddleware>();
+app.UseMiddleware<IdempotencyMiddleware>();
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>

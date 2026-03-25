@@ -26,7 +26,6 @@ namespace ERP_System.Application.Features.Customers.Queries.GetAllCustomers
                 .Where(c => c.IsActive);
 
             var totalCount =await baseQry.CountAsync(ct);
-
             var customers = await baseQry
                 .OrderBy(c => c.CustomerId)
                 .Skip((qry.PageNumber - 1) * qry.PageSize)
@@ -34,14 +33,12 @@ namespace ERP_System.Application.Features.Customers.Queries.GetAllCustomers
                 .ToListAsync();
 
             var res = _mapper.Map<IEnumerable<CustomerResponseDto>>(customers);
-
             var paged = new PagedResponse<CustomerResponseDto>(
                 res,
                 totalCount,
                 qry.PageNumber,
                 qry.PageSize
-
-                );
+            );
             return ApiResponse<PagedResponse<CustomerResponseDto>>.Ok(paged);
         }
     }
