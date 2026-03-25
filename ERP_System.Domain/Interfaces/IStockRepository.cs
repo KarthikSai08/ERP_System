@@ -13,6 +13,7 @@ namespace ERP_System.Domain.Interfaces
         Task<int> GetTotalStockAsync(int productId, CancellationToken ct);
         Task<int> AddAsync(Stock stock, CancellationToken ct);
         Task UpdateAsync(Stock stock, CancellationToken ct);
+        Task<Dictionary<int, int>> GetStockByProductIdsAsync(List<int> productIds, CancellationToken ct);
     }
 
 }

@@ -66,7 +66,18 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
             _cache.Set(cacheKey, stock, cachedOptions);
             return stock;
         }
-
+        public async Task<Dictionary<int, int>> GetStockByProductIdsAsync(List<int> productIds,CancellationToken ct)
+        {
+            return await _context.Stocks
+                .Where(s => productIds.Contains(s.ProductId))
+                .GroupBy(s => s.ProductId)
+                .Select(g => new
+                {
+                    ProductId = g.Key,
+                    TotalStock = g.Sum(x => x.Quantity)
+                })
+                .ToDictionaryAsync(x => x.ProductId, x => x.TotalStock, ct);
+        }
         public async Task<IEnumerable<Stock>> GetByProductAsync(int productId, CancellationToken ct)
         {
             var cacheKey = $"stock:{productId}";

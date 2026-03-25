@@ -66,7 +66,7 @@ namespace ERP_System.Application.Features.Orders.Commands.CreateOrder
                     await _stkRepo.UpdateAsync(stock, ct);
                 }
 
-                await _uow.CommitAsync(); // ✅ commit once — all items atomically
+                await _uow.CommitAsync(); 
 
                 var created = await _orderRepo.GetByIdWithItemsAsync(orderId, ct);
                 var res = _mapper.Map<OrderResponseDto>(created);

@@ -1,44 +1,71 @@
 ﻿using AutoMapper;
 using ERP_System.Application.Common;
 using ERP_System.Application.DTOs;
-using ERP_System.Application.Features.Products.Commands.CreateProduct;
+using ERP_System.Application.Features.Products.Queries.GetAllProducts;
+using ERP_System.Application.Interfaces;
 using ERP_System.Domain.Interfaces;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
+using Microsoft.EntityFrameworkCore;
 
-namespace ERP_System.Application.Features.Products.Queries.GetAllProducts
-{
-    public class GetAllProductQueryHandler : IRequestHandler<GetAllProductsQuery, ApiResponse<IEnumerable<ProductResponseDto>>>
+
+public class GetAllProductQueryHandler
+        : IRequestHandler<GetAllProductsQuery, ApiResponse<PagedResponse<ProductResponseDto>>>
     {
-        private readonly IProductRepository _PrdRepo;
-        private readonly IStockRepository _StkRepo;
+        private readonly IProductRepository _prdRepo;
+        private readonly IStockRepository _stkRepo;
         private readonly IMapper _mapper;
-        public GetAllProductQueryHandler(IProductRepository prdRepo, IStockRepository stkRepo,IMapper mapper)
+
+        public GetAllProductQueryHandler(
+            IProductRepository prdRepo,
+            IStockRepository stkRepo,
+            IMapper mapper)
         {
-            _PrdRepo = prdRepo;
-            _StkRepo = stkRepo;
+            _prdRepo = prdRepo;
+            _stkRepo = stkRepo;
             _mapper = mapper;
         }
 
-        public async Task<ApiResponse<IEnumerable<ProductResponseDto>>> 
-            Handle(GetAllProductsQuery query,CancellationToken ct) 
+        public async Task<ApiResponse<PagedResponse<ProductResponseDto>>> Handle(
+            GetAllProductsQuery query,
+            CancellationToken ct)
         {
-            var prd = await _PrdRepo.GetAllAsync(ct);
+
+        //var version = await _cache.GetAsync<int>("products:version", ct);
+        //if (version == 0) version = 1;
+
+        //var cacheKey = $"products:v{version}:page:{query.PageNumber}:size:{query.PageSize}";
+
+        var baseQuery = _prdRepo.GetQueryable()
+                .Where(p => p.IsActive);
+
+            var totalCount = await baseQuery.CountAsync(ct);
+
+            var products = await baseQuery
+                .OrderBy(p => p.ProductId)
+                .Skip((query.PageNumber - 1) * query.PageSize)
+                .Take(query.PageSize)
+                .ToListAsync(ct);
+
+            var response = _mapper.Map<List<ProductResponseDto>>(products);
+
             
-            var response = _mapper.Map<List<ProductResponseDto>>(prd);
+            var productIds = products.Select(p => p.ProductId).ToList();
 
-            var stockTasks = response.Zip(prd, (r, p) => new { Respone = r, ProductId = p.ProductId })
-                .Select(async x =>
-                {
-                    x.Respone.TotalStock = await _StkRepo.GetTotalStockAsync(x.ProductId, ct);
-                }
-                );
-            await Task.WhenAll(stockTasks);
+            var stockDict = await _stkRepo.GetStockByProductIdsAsync(productIds, ct);
 
-            return ApiResponse<IEnumerable<ProductResponseDto>>.Ok(response);        }
-        
+            foreach (var item in response)
+            {
+                if (stockDict.TryGetValue(item.Id, out var stock))
+                    item.TotalStock = stock;
+            }
+
+            var paged = new PagedResponse<ProductResponseDto>(
+                response,
+                totalCount,
+                query.PageNumber,
+                query.PageSize
+            );
+
+            return ApiResponse<PagedResponse<ProductResponseDto>>.Ok(paged);
+        }
     }
-}

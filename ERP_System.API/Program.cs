@@ -45,8 +45,16 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "ERP System v1");
-    c.RoutePrefix = string.Empty;
+    c.RoutePrefix = "swagger"; // ← move swagger off root
 });
+
+app.MapScalarApiReference(options =>
+{
+    options.Title = "ERP System API";
+    options.OpenApiRoutePattern = "/swagger/v1/swagger.json";
+    options.Theme = ScalarTheme.DeepSpace;
+});
+
 app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();

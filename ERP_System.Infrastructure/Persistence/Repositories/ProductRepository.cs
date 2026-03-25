@@ -32,7 +32,12 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
             return product.ProductId;
 
         }
+        public IQueryable<Product> GetQueryable()
+        {
+            return _context.Products;
+        }
 
+        
         public async Task DeleteAsync(int id,CancellationToken ct)
         {
             var p = await _context.Products.FindAsync(id);

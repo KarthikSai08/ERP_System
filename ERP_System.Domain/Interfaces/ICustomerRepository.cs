@@ -13,5 +13,6 @@ namespace ERP_System.Domain.Interfaces
         Task<bool> EmailExistsAsync(string email, CancellationToken ct);
         Task<int> AddAsync(Customer customer, CancellationToken ct);
         Task UpdateAsync(Customer customer, CancellationToken ct);
+        IQueryable<Customer> GetQueryable();
     }
 }

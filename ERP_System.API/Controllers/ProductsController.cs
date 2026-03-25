@@ -4,6 +4,7 @@ using ERP_System.Application.Features.Products.Commands.UpdateProduct;
 using ERP_System.Application.Features.Products.Queries.GetAllProducts;
 using ERP_System.Application.Features.Products.Queries.GetProductById;
 using ERP_System.Application.Features.Products.Queries.SearchProducts;
+using ERP_System.Application.Interfaces;
 using ERP_System.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -16,22 +17,32 @@ namespace ERP_System.API.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ICacheService _cache;
 
-        public ProductsController(IMediator mediator)
+        public ProductsController(IMediator mediator, ICacheService cache)
         {
             _mediator = mediator;
+            _cache = cache;
         }
 
-        // ✅ SPECIFIC routes first
+
         [HttpGet("all-products")]
-        public async Task<IActionResult> GetAllAsync()
-            => Ok(await _mediator.Send(new GetAllProductsQuery()));
+        public async Task<IActionResult> GetAllAsync([FromQuery] GetAllProductsQuery query, CancellationToken ct)
+        {
+            var version = await _cache.GetAsync<int>("products:version", ct);
+            if (version == 0) version = 1;
+
+            query = query with { Version = version };
+
+            return Ok(await _mediator.Send(query)); 
+        
+        }
+
 
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] string? name, [FromQuery] int? categoryId, [FromQuery] decimal? maxPrice)
             => Ok(await _mediator.Send(new SearchProductsQuery(name, categoryId, maxPrice)));
 
-        // ✅ PARAMETERIZED route last
         [HttpGet("{id}", Name = "GetProductById")]
         public async Task<IActionResult> GetAsync(int id, CancellationToken cancellationToken )
         {
@@ -40,7 +51,6 @@ namespace ERP_System.API.Controllers
             return Ok(result);
         }
 
-        // Create
         [HttpPost("create")]
         public async Task<IActionResult> CreateAsync([FromBody] CreateProductCommand cmd)
         {
@@ -48,7 +58,6 @@ namespace ERP_System.API.Controllers
             return CreatedAtRoute("GetProductById", new { id = result.Data!.Id }, result);
         }
 
-        // Update
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateProductCommand cmd)
         {
@@ -56,7 +65,6 @@ namespace ERP_System.API.Controllers
             return Ok(result);
         }
 
-        // Delete
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

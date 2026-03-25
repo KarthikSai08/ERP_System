@@ -16,9 +16,10 @@ namespace ERP_System.Application.DependencyInjection
 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assembly));
 
-
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviors<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            
 
             return services;
         }

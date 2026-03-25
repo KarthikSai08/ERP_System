@@ -95,12 +95,15 @@ namespace ERP_System.API.Controllers
         public async Task<IActionResult> DeleteCategory(int id)
         {
             var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
 
-            _context.Categories.Remove(category);
+            if (category == null)
+                return NotFound();
+
+            if (!category.IsActive)
+                return BadRequest("Category already inactive");
+
+            category.Deactivate();
+
             await _context.SaveChangesAsync();
 
             return NoContent();

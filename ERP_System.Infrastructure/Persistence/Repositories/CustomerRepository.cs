@@ -35,7 +35,12 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
 
         public async Task<Customer?> GetByIdAsync(int id, CancellationToken ct)
             => await _context.Customers.AsNoTracking().FirstOrDefaultAsync(c => c.CustomerId == id);
-        
+
+        public IQueryable<Customer> GetQueryable()
+        {
+            return _context.Customers;
+        }
+
         public async Task UpdateAsync(Customer customer, CancellationToken ct)
         {
             _context.Customers.Update(customer);

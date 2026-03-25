@@ -2,10 +2,6 @@
 using ERP_System.Domain.Exceptions;
 using ERP_System.Domain.Interfaces;
 using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ERP_System.Application.Features.Products.Commands.DeleteProduct
 {
@@ -19,13 +15,17 @@ namespace ERP_System.Application.Features.Products.Commands.DeleteProduct
 
         public async Task<ApiResponse<bool>> Handle(DeleteProductCommand cmd,CancellationToken ct)
         {
-            var prd = await _repo.GetByIdAsync(cmd.id, ct)
+            var product = await _repo.GetByIdAsync(cmd.id, ct)
                 ?? throw new NotFoundException("Product", cmd.id);
 
-            prd.Deactivate();
-            await _repo.UpdateAsync(prd, ct);
+            if (!product.IsActive)
+                return ApiResponse<bool>.Fail("Product is already inactive");
 
-            return ApiResponse<bool>.Ok(true, "Product deactivated Successfully");
+            product.Deactivate();
+
+            await _repo.UpdateAsync(product, ct);
+
+            return ApiResponse<bool>.Ok(true, "Product deactivated successfully");
         }
         
     }
