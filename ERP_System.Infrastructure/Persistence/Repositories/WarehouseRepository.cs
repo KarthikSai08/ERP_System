@@ -3,9 +3,6 @@ using ERP_System.Domain.Exceptions;
 using ERP_System.Domain.Interfaces;
 using ERP_System.Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ERP_System.Infrastructure.Persistence.Repositories
 {
@@ -20,21 +17,21 @@ namespace ERP_System.Infrastructure.Persistence.Repositories
 
         public async Task<int> AddAsync(Warehouse warehouse, CancellationToken ct)
         {
-            _context.Warehouses.AddAsync(warehouse);
+            await _context.Warehouses.AddAsync(warehouse);
             await _context.SaveChangesAsync();
             return warehouse.WarehouseId;
         }
 
         public async Task<IEnumerable<Warehouse>> GetAllAsync(CancellationToken ct)
         {
-           var res = await _context.Warehouses.AsNoTracking().ToListAsync();
+            var res = await _context.Warehouses.AsNoTracking().ToListAsync();
             return res;
         }
 
         public async Task<Warehouse?> GetByIdAsync(int id, CancellationToken ct)
         {
             var res = await _context.Warehouses.FirstOrDefaultAsync(w => w.WarehouseId == id)
-                ?? throw new NotFoundException("Warehouse",id);
+                ?? throw new NotFoundException("Warehouse", id);
             return res;
         }
         public async Task<bool> WarehouseExistsAsync(string name, CancellationToken ct)
